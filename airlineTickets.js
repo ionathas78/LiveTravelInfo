@@ -2,7 +2,7 @@
 
 const _CORS_SERVER = "https://polar-bayou-73801.herokuapp.com/";
 const _AIRLINE_APIBASE = "http://api.travelpayouts.com/v2";
-const _AIRLINE_APICHEAPEST = "/prices/latest";          //  Needs '?' after
+const _AIRLINE_APILATEST = "/prices/latest";          //  Needs '?' after
 const _AIRLINE_CURRENCY = "currency=%CURRENCY%";            //  Where %CURRENCY% is the currency code
 const _AIRLINE_ORIGIN = "origin=%CITY%";                   //  Where %CITY% is the city code
 const _AIRLINE_DESTINATION = "destination=%CITY%";         //  Where %CITY% is the city code
@@ -14,7 +14,6 @@ const _AUSTIN_IATACODE = "AUS";
 const _USDOLLAR_CURRENCYCODE = "USD";
 
 var _response;
-// var _corsObject = createCORSRequest("GET", "google.com");
 
 //  **  Functions
 
@@ -29,7 +28,7 @@ function makeAirlineQueryString(originCode, destinationCode, departDate, returnD
     var returnString = "";
 
     var queryBase = _AIRLINE_APIBASE;
-    var apiCall = _AIRLINE_APICHEAPEST;
+    var apiCall = _AIRLINE_APILATEST;
     var currencySpec = _AIRLINE_CURRENCY.replace("%CURRENCY%", _USDOLLAR_CURRENCYCODE);
     var originSpec = "";
     var destinationSpec = _AIRLINE_DESTINATION.replace("%CITY%", destinationCode);
@@ -71,8 +70,6 @@ function makeAirlineQueryString(originCode, destinationCode, departDate, returnD
         };
     };
 
-    // returnString += "&" + _AIRLINE_APIKEY;
-
     return returnString;
 };
 
@@ -81,8 +78,6 @@ function makeAirlineQueryString(originCode, destinationCode, departDate, returnD
  * @param {*} queryString Full API Call, including http(s)://
  */
 function sendAjax(queryString) {
-    // console.log(queryString);
- 
     queryString = _CORS_SERVER + queryString;
 
     $.ajax({
@@ -100,7 +95,7 @@ function sendAjax(queryString) {
 
 //  **  Logic
 
-sendAjax(makeAirlineQueryString("", "MEX"));
+// sendAjax(makeAirlineQueryString("", "MEX"));
 
 
 
