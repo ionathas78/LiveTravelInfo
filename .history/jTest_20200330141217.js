@@ -1,20 +1,18 @@
 //  **  Declarations
 
-const _CORS_SERVER = "https://polar-bayou-73801.herokuapp.com/";
-const _AIRLINE_APIBASE = "http://api.travelpayouts.com/v2";
-const _AIRLINE_APICHEAPEST = "/prices/latest";          //  Needs '?' after
+const _AIRLINE_APIBASE = "http://api.travelpayouts.com/v1";
+const _AIRLINE_APICHEAPEST = "/prices/cheap";          //  Needs '?' after
 const _AIRLINE_CURRENCY = "currency=%CURRENCY%";            //  Where %CURRENCY% is the currency code
 const _AIRLINE_ORIGIN = "origin=%CITY%";                   //  Where %CITY% is the city code
 const _AIRLINE_DESTINATION = "destination=%CITY%";         //  Where %CITY% is the city code
 const _AIRLINE_DEPART = "depart_date=%YEAR%-%MONTH%";     //  Where %YEAR% is the year and %MONTH% is the month
 const _AIRLINE_RETURN = "return_date=%YEAR%-%MONTH%";     //  Where %YEAR% is the year and %MONTH% is the month
-const _AIRLINE_APIKEY = "token=%TOKEN%";                    //  Where %TOKEN% is the user's token
-const _AIRLINE_TOKEN = "83fa8527d64346234a08793dc2258fe5";
+const _AIRLINE_APIKEY = "token=83fa8527d64346234a08793dc2258fe5"
+
 const _AUSTIN_IATACODE = "AUS";
 const _USDOLLAR_CURRENCYCODE = "USD";
 
 var _response;
-// var _corsObject = createCORSRequest("GET", "google.com");
 
 //  **  Functions
 
@@ -61,7 +59,7 @@ function makeAirlineQueryString(originCode, destinationCode, departDate, returnD
     returnString = queryBase + apiCall + "?" + 
                 currencySpec + "&" +
                 originSpec + "&" +
-                destinationSpec;
+                destinationCode;
 
     if (departSpec != "") {
         returnString += "&" + departSpec;
@@ -71,7 +69,7 @@ function makeAirlineQueryString(originCode, destinationCode, departDate, returnD
         };
     };
 
-    // returnString += "&" + _AIRLINE_APIKEY;
+    returnString += "&" + _AIRLINE_APIKEY;
 
     return returnString;
 };
@@ -80,15 +78,12 @@ function makeAirlineQueryString(originCode, destinationCode, departDate, returnD
  * Send specified Ajax query
  * @param {*} queryString Full API Call, including http(s)://
  */
-function sendAjax(queryString) {
-    // console.log(queryString);
- 
-    queryString = _CORS_SERVER + queryString;
-
+function SendAjax(queryString) {
+    console.log(queryString);
+    
     $.ajax({
         method: "GET",
-        url: queryString,
-        headers: {"X-Access-Token": _AIRLINE_TOKEN}
+        url: queryString
     }).then(function (response) {
         _response = response;
         console.log(response);
@@ -97,11 +92,6 @@ function sendAjax(queryString) {
 
 //  **  Events
 
-
 //  **  Logic
 
-sendAjax(makeAirlineQueryString("", "MEX"));
-
-
-
-
+makeAirlineQueryString("", "MEX");
