@@ -1,6 +1,5 @@
 //  **  Declarations
 
-const _CORS_SERVER = "https://polar-bayou-73801.herokuapp.com/";
 const _AIRLINE_APIBASE = "http://api.travelpayouts.com/v2";
 const _AIRLINE_APICHEAPEST = "/prices/latest";          //  Needs '?' after
 const _AIRLINE_CURRENCY = "currency=%CURRENCY%";            //  Where %CURRENCY% is the currency code
@@ -83,7 +82,7 @@ function makeAirlineQueryString(originCode, destinationCode, departDate, returnD
 function sendAjax(queryString) {
     // console.log(queryString);
  
-    queryString = _CORS_SERVER + queryString;
+    queryString = "https://polar-bayou-73801.herokuapp.com/" + queryString;
 
     $.ajax({
         method: "GET",
