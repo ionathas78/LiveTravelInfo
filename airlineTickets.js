@@ -77,7 +77,7 @@ function makeAirlineQueryString(originCode, destinationCode, departDate, returnD
  * Send specified Ajax query
  * @param {*} queryString Full API Call, including http(s)://
  */
-function sendAjax(queryString) {
+function sendAjax_CORS(queryString) {
     queryString = _CORS_SERVER + queryString;
 
     $.ajax({
@@ -95,7 +95,7 @@ function sendAjax(queryString) {
 
 //  **  Logic
 
-// sendAjax(makeAirlineQueryString("", "MEX"));
+sendAjax_CORS(makeAirlineQueryString("", "MEX"));
 
 
 
