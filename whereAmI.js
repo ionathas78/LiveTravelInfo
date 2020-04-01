@@ -44,10 +44,13 @@ function makeWhereAmIQueryString(localeCode, callbackName, ipAddress) {
         ipString = _WHEREIS_IPADDRESS.replace("%ADDRESS%", ipAddress);
     }
     
-    returnString = baseString + "?" +
-                localeString + "&" +
-                callbackString;
+    // returnString = baseString + "?" +
+    //             localeString + "&" +
+    //             callbackString;
     
+    returnString = baseString + "?" +
+                localeString;
+
     if (ipString != "") {
         returnString += "&" + ipString;
     }
@@ -61,24 +64,70 @@ function makeWhereAmIQueryString(localeCode, callbackName, ipAddress) {
  */
 function sendAjax(queryString) {
     console.log(queryString);
-    // queryString = _CORS_SERVER + queryString;
 
     $.ajax({
         method: "GET",
         url: queryString
-        // headers: {"X-Access-Token": _AIRLINE_TOKEN}
     }).then(function (response) {
         _response = response;
         console.log(response);
+        renderWhereIAm(response);
     });
 };
+
+/**
+ * Runs when the user presses the Where Am I? button
+ */
+function whereAmI() {
+    sendAjax(makeWhereAmIQueryString());
+};
+
+/**
+ * Displays result to the screen.
+ * @param {*} response API response
+ */
+function renderWhereIAm (response) {
+    let textBox = $("#text-display");
+    let existingText = textBox.text();
+
+    let msgResponse = "Where Am I results:\n";
+    let queryEnd = new Date();
+    let queryLength = queryEnd.getMilliseconds() - _queryStart.getMilliseconds();
+
+    let resultCityCode = response.iata;
+    let resultCityName = response.name;
+    let resultCountryName = response.country_name;
+    let resultCoords = response.coordinates;
+
+    let colonPos = -1;
+    let resultLat = "";
+    let resultLon = "";
+
+    if (resultCoords) {
+        colonPos = resultCoords.indexOf(":");
+    };
+    if (colonPos > -1) {
+        let resultLat = response.coordinates.substring(0, colonPos);
+        let resultLon = response.coordinates.substring(colonPos + 1);
+    }
+    
+    let msgLine = "User location: " + resultCityName + " (" + resultCityCode + ") in " + resultCountryName + ".";
+    if (resultLat != "") {
+        msgLine += " Coordinates (Latitude, Longitude): " + resultLat + ", " + resultLon + "." +
+                    " Query took " + queryLength + " milliseconds.";
+    };
+
+    msgResponse += msgLine + "\n";
+    
+    $("#text-display").text(existingText + msgResponse);
+}
 
 //  **  Events
 
 
 //  **  Logic
 
-sendAjax(makeWhereAmIQueryString());
+// sendAjax(makeWhereAmIQueryString());
 
 
 
