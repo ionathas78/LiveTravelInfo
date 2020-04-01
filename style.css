@@ -27,9 +27,11 @@ a{
 }
 p{
     text-align: center;
+    font-family: 'Roboto', sans-serif;
 }
 h1{
     text-align: center;
+    font-family: 'Roboto', sans-serif;
 }
 .callout {
     height: 40%;
@@ -60,11 +62,7 @@ label{
 .container{
     margin-top: 10%;
 }
-button{
-    margin: auto;
-    align-content: center;
-    background-color: violet;
-}
+
 
 
 /* Small only */

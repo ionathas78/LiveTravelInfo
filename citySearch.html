@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Search</title>
+
+    <link rel="stylesheet" href="Foundation-6.6.1-CSS-project/assets/css/app.css" />
+    <!-- Compressed CSS -->
+    <link rel="stylesheet" href="Foundation-6.6.1-CSS-project/index.html"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,500;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="Foundation-6.6.1-CSS-project/foundation-icons.css">
+    <link rel="stylesheet" href="citySearch.css"/>
+</head>
+<body>
+
+    
+    <div class="top-bar">
+        <ul class="menu" data-dropdown-menu>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#">Last Trip Database</a></li>
+            <li><a href="contact.html" >Contact Us</a></li>
+        </ul>
+    </div>
+
+    <div>
+        <p style="font-size: 500%;">Your City Search here</p>
+    </div>
+
+    <div class="grid-x grid-margin-x" data-equalizer data-equalize-on="medium" id="test-eq">
+     
+        <div class="cell small-4">
+            <div class="callout align-left" id="currencyExchange">
+                <div class="small-2 cell">
+                    <label>
+                        <i class="fi-dollar"></i>
+                      <input id="USCurrency" type="text" placeholder="---.--">
+                    </label>
+                  </div>
+                  <div class="small-2 cell">
+                    <label>
+                    <i class="fi-euro"></i>
+                      <input id="foreignCurrency" type="text" placeholder="---.--">
+                    </label>
+                  </div>
+                
+             
+            </div>
+           
+        </div>
+        <div class="cell small-8">
+            <div class="callout">
+                <div  id="liveVideo"></div>
+    
+            </div>
+        </div>
+    </div>
+
+
+   
+
+
+    <div class="row">
+        <h1>5 Day forecast</h1>
+        <div class="callout" id="forecast">
+
+        </div>
+        
+    </div>
+
+    
+    
+    
+    
+
+
+
+
+    <script src="Foundation-6.6.1-CSS-project/assets/js/app.js"></script>
+    <script src="Foundation-6.6.1-CSS-project/assets/js/app.js.map"></script>
+    <script src="js/vendor/foundation.min.js"></script>
+    
+</body>
+</html>

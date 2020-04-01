@@ -1,0 +1,47 @@
+p{
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    color:#000;
+    text-shadow:
+		-1px -1px 0 white,
+		1px -1px 0 white,
+		-1px 1px 0 white,
+		1px 1px 0 white;
+}
+h1{
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    color:#000;
+    text-shadow:
+		-1px -1px 0 white,
+		1px -1px 0 white,
+		-1px 1px 0 white,
+		1px 1px 0 white;
+}
+body{
+    background-image: url('https://traveler.marriott.com/wp-content/uploads/2019/06/GI_530855809_VeniceGrandCanal.jpg');
+  
+}
+
+.top-bar {
+    background: #333;
+}
+.menu{
+    background: #333;
+}
+li{
+    background: #333;
+}
+
+li:hover{
+    background: lighten(#333, 10%);
+
+}
+#currencyExchange{
+    background-color: #eeeeee;
+}
+i{
+    height: 20px;
+}
