@@ -37,11 +37,11 @@ function makeAirlineQueryString(originCode, destinationCode, departDate, returnD
 
     var originCity = _AUSTIN_IATACODE;
 
-    if ((originCode == "") || (originCode === null)) {
+    if ((originCode != "") && (originCode !== null)) {
         originCity = originCode;
     };
 
-    originSpec = originSpec.replace("%CITY%", originCity);
+    originSpec = _AIRLINE_ORIGIN.replace("%CITY%", originCity);
 
     if (departDate >= Date.now()) {
         let departMonth = departDate.getMonth();
@@ -86,8 +86,63 @@ function sendAjax_CORS(queryString) {
         headers: {"X-Access-Token": _AIRLINE_TOKEN}
     }).then(function (response) {
         _response = response;
+
+        renderTickets(response);
+
         console.log(response);
     });
+};
+
+/**
+ * Called when the user presses the 'Get Tickets' button
+ */
+function runTicketTest() {
+    let userInput = $("#test-tickets").val();
+
+    sendAjax_CORS(makeAirlineQueryString("", userInput));
+};
+
+/**
+ * Displays the ticket results on the screen
+ * @param {Object} response API response package
+ */
+function renderTickets(response) {
+
+    let textBox = $("#text-display");
+    let existingText = textBox.text();
+    let resultArray = response.data;
+    let msgResponse = "Ticket Price fetch:\n";
+
+    for (var i = 0; i < resultArray.length; i++) {
+        let resultOrigin = resultArray[i].origin;
+        let resultDestination = resultArray[i].destination;
+        let resultDepart = resultArray[i].depart_date;
+        let resultPrice = resultArray[i].value;
+        let resultClass = returnTripClass(resultArray[i].trip_class);
+
+        let msgLine = i + ": " + resultOrigin + " to " + resultDestination + "(depart " + resultDepart + "): $" +
+                    resultPrice + ", " + resultClass + " class.";
+
+        msgResponse += msgLine + "\n";
+    };
+
+    $("#text-display").text(existingText + msgResponse);
+};
+
+function returnTripClass(classCode) {
+    let returnString = "";
+    switch (classCode) {
+        case 0:
+            returnString = "Economy";
+            break;
+        case 1:
+            returnString = "Business";
+            break;
+        case 2:
+            returnString = "First";
+        default:
+    }
+    return returnString;
 };
 
 //  **  Events
