@@ -36,10 +36,12 @@ function makeAirlineQueryString(originCode, destinationCode, departDate, returnD
     var departSpec = "";
     var returnSpec = "";
 
-    var originCity = _AUSTIN_IATACODE;
+    var originCity = _userCityCode;
 
-    if ((originCode != "") && (originCode !== null)) {
+    if (!((originCode == "") || (originCode == null))) {
         originCity = originCode;
+    } else if (((!originCity) || (originCity == ""))) {
+        originCity = _AUSTIN_IATACODE;
     };
 
     originSpec = _AIRLINE_ORIGIN.replace("%CITY%", originCity);
@@ -110,11 +112,11 @@ function runTicketTest() {
  */
 function renderTickets(response) {
     let textBox = $("#text-display");
-    let existingText = textBox.text();
+    let existingText = textBox.text() + "\n\n";
     let resultArray = response.data;
     let msgResponse = "Ticket Price fetch:\n";
     let queryEnd = new Date();
-    let queryLength = queryEnd.getMilliseconds() - _queryStart.getMilliseconds();
+    let queryLength = queryEnd.getTime() - _queryStart.getTime();
 
     for (var i = 0; i < resultArray.length; i++) {
         let resultOrigin = resultArray[i].origin;
@@ -128,8 +130,11 @@ function renderTickets(response) {
 
         msgResponse += msgLine + "\n";
     };
-    
-    $("#text-display").text(existingText + msgResponse);
+    if (resultArray.length < 1) {
+        msgResponse += "No tickets found!";
+    }
+
+    textBox.text(existingText + msgResponse);
 };
 
 function returnTripClass(classCode) {

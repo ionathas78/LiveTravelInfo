@@ -8,18 +8,21 @@
     
 </head>
 <body>
-    <h1>Open the console to see the magic!</h1>
-
+    <h1>LiveTravelInfo API Test Bed</h1>
+    <article>
+        <button onclick="runWhereAmI()" style="margin: 1vw 2vw 2vw 2vw;">Where Am I?</button>
+    </article>
+    <article>
+        <input id="city-search" placeholder="City Name" style="width: 30vw; margin: 1vw 1vw 1vw 2vw;">
+        <button onclick="runCitySearch()">Get City Code</button>
+    </article>
     <article>
         <input id="test-tickets" placeholder="Destination City Code" style="width: 30vw; margin: 1vw 1vw 1vw 2vw;">
         <button onclick="runTicketTest()">Get Tickets</button>
     </article>
-    <article>
-        <button onclick="runWhereAmI()" style="margin: 1vw 2vw 2vw 2vw;">Where Am I?</button>
-    </article>
 
     <main>
-        <textarea id="text-display" style="height: 50vw; width: 50vw;"></textarea>
+        <textarea id="text-display" style="height: 50vh; width: 50vw;"></textarea>
     </main>
 
 
@@ -27,10 +30,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <!-- <script src="cors-anywhere.js" type="text/javascript"></script> -->
 
-    <!-- <script src="Assets/cities.js" type="text/javascript"></script> -->
+    <script src="Assets/cities.js" type="text/javascript"></script>
     
     <script src="airlineTickets.js" type="text/javascript"></script>
     <script src="whereAmI.js" type="text/javascript"></script>
-    <!-- <script src="iataDBase.js" type="text/javascript"></script> -->
+    <script src="iataDBase.js" type="text/javascript"></script>
 </body>
 </html>
