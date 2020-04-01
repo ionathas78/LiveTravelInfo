@@ -204,18 +204,21 @@
     YEM: "Yemen",
     ZAM: "Zambia",
     ZIM: "Zimbabwe",
-};
+    };
     /*var countrySelect = getElementById("container");*/
     fillSelector();
     
 
     function fillSelector () {
+        var i=0
+        for(i=0; i<=countries.length; i++)
         //var out = $("option").append("#container");
         for (let key in countries) {
             console.log(countries[key]);
-          }
-      $(countries).appendTo(".listItem");
+            $(countries).appendTo(".listItem");
         };
+          };
+     
     
 
    /*<select> for (var key in countries) {</select>
