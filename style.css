@@ -1,3 +1,72 @@
+body{
+    background-image: url('https://traveler.marriott.com/wp-content/uploads/2019/06/GI_530855809_VeniceGrandCanal.jpg');
+  
+}
+
+.top-bar {
+    background: #333;
+}
+.menu{
+    background: #333;
+}
+li{
+    background: #333;
+}
+
+li:hover{
+    background: lighten(#333, 10%);
+
+}
+
+.card{
+   margin: auto;
+}
+    
+a{
+    color: #ffffff;
+}
+p{
+    text-align: center;
+}
+h1{
+    text-align: center;
+}
+.callout {
+    height: 40%;
+    width: 60%;
+    margin: auto;
+}
+#searchCallout{
+    margin-top: 80px;
+
+}
+#headerCallout{
+    margin-top: 40px;
+}
+body{
+    background-color: #eee;
+}
+
+label{
+    font-weight: bold;
+    color: white;
+    text-shadow:
+		-1px -1px 0 #000,
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
+		1px 1px 0 #000;
+}
+
+.container{
+    margin-top: 10%;
+}
+button{
+    margin: auto;
+    align-content: center;
+    background-color: violet;
+}
+
+
 /* Small only */
 @media screen and (max-width: 39.9375em) {}
 
