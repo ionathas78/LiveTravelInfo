@@ -14,6 +14,7 @@ const _AUSTIN_IATACODE = "AUS";
 const _USDOLLAR_CURRENCYCODE = "USD";
 
 var _response;
+var _queryStart = new Date();
 
 //  **  Functions
 
@@ -99,6 +100,7 @@ function sendAjax_CORS(queryString) {
 function runTicketTest() {
     let userInput = $("#test-tickets").val();
 
+    _queryStart = new Date();
     sendAjax_CORS(makeAirlineQueryString("", userInput));
 };
 
@@ -107,11 +109,12 @@ function runTicketTest() {
  * @param {Object} response API response package
  */
 function renderTickets(response) {
-
     let textBox = $("#text-display");
     let existingText = textBox.text();
     let resultArray = response.data;
     let msgResponse = "Ticket Price fetch:\n";
+    let queryEnd = new Date();
+    let queryLength = queryEnd.getMilliseconds() - _queryStart.getMilliseconds();
 
     for (var i = 0; i < resultArray.length; i++) {
         let resultOrigin = resultArray[i].origin;
@@ -121,11 +124,11 @@ function renderTickets(response) {
         let resultClass = returnTripClass(resultArray[i].trip_class);
 
         let msgLine = i + ": " + resultOrigin + " to " + resultDestination + "(depart " + resultDepart + "): $" +
-                    resultPrice + ", " + resultClass + " class.";
+                    resultPrice + ", " + resultClass + " class. Query took: " + queryLength + " milliseconds.";
 
         msgResponse += msgLine + "\n";
     };
-
+    
     $("#text-display").text(existingText + msgResponse);
 };
 
