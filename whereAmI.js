@@ -11,6 +11,7 @@ const _CALLBACK_NAME = "useriata";
 
 var _startTime = Date.now();
 var _response;
+var _userCityCode = "";
 
 //  **  Functions
 
@@ -61,9 +62,10 @@ function makeWhereAmIQueryString(localeCode, callbackName, ipAddress) {
 
 /**
  * Send specified Ajax query
- * @param {*} queryString Full API Call, including http(s)://
+ * @param {Text} queryString Full API Call, including http(s)://
+ * @param {Boolean} doRender Render results to page?
  */
-function sendAjax(queryString) {
+function sendAjax(queryString, doRender) {
     console.log(queryString);
 
     $.ajax({
@@ -71,8 +73,11 @@ function sendAjax(queryString) {
         url: queryString
     }).then(function (response) {
         _response = response;
+        _userCityCode = response.iata;
         console.log(response);
-        renderWhereIAm(response);
+        if (doRender) {
+            renderWhereIAm(response);
+        };
     });
 };
 
@@ -82,7 +87,15 @@ function sendAjax(queryString) {
 function runWhereAmI() {
 
     _startTime = Date.now();
-    sendAjax(makeWhereAmIQueryString());
+    sendAjax(makeWhereAmIQueryString(), true);
+};
+
+/**
+ * Populates the global variable _userCityCode with the resulting IATA code without displaying the
+ * results to screen.
+ */
+function getWhereAmI() {
+    sendAjax(makeWhereAmIQueryString(), false);
 };
 
 /**
@@ -91,11 +104,11 @@ function runWhereAmI() {
  */
 function renderWhereIAm (response) {
     let textBox = $("#text-display");
-    let existingText = textBox.text();
+    let existingText = textBox.text() + "\n\n";
 
     let msgResponse = "Where Am I results:\n";
     let queryEnd = new Date();
-    let queryLength = queryEnd.getMilliseconds() - _queryStart.getMilliseconds();
+    let queryLength = queryEnd.getTime() - _queryStart.getTime();
 
     let resultCityCode = response.iata;
     let resultCityName = response.name;
@@ -132,6 +145,7 @@ function renderWhereIAm (response) {
 
 // sendAjax(makeWhereAmIQueryString());
 
+getWhereAmI();
 
 
 
