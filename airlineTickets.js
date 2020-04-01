@@ -153,7 +153,7 @@ function returnTripClass(classCode) {
 
 //  **  Logic
 
-sendAjax_CORS(makeAirlineQueryString("", "MEX"));
+// sendAjax_CORS(makeAirlineQueryString("", "MEX"));
 
 
 
