@@ -59,13 +59,14 @@ function CityData(cityName, countryName, cityCode, cityLatitude, cityLongitude, 
     };
 };
 
-function main() {
+function testCityDB() {
     let testCity = returnCityInfo(_TEST_CITYNAME, _TEST_COUNTRYCODE);
     console.log(testCity);
     let userInput, msgOutput;
 
-    do {
-        userInput = prompt("City to search?", "Austin, US");
+    userInput = prompt("City to search?", "Austin, US");
+        
+    while (userInput) {
         let userCity = "";
         let userState = "";
         let commaPos = -1;
@@ -85,10 +86,10 @@ function main() {
         startTime = new Date();
         testCity = returnCityInfo(userCity, userState);
         endTime = new Date();
-        elapsedTime = (endTime.getSeconds() - startTime.getSeconds())
+        elapsedTime = (endTime.getMilliseconds() - startTime.getMilliseconds())
 
         if (testCity) {
-        msgOutput = testCity.name + ", " + testCity.country + "(" + testCity.code + ")\n" +
+        msgOutput = testCity.name + ", " + testCity.country + " (" + testCity.code + ")\n" +
                     "LatLon: (" + testCity.coords.lat + ", " + testCity.coords.lon + ")\n" +
                     "Time Zone: " + testCity.timeZone + "\n" +
                     "Search took " + elapsedTime + " milliseconds.";
@@ -96,7 +97,9 @@ function main() {
             msgOutput = "Couldn't find '" + userInput + "'!"
         }
         alert(msgOutput);
-    } while (userInput);
+
+        userInput = prompt("City to search?", "Austin, US");
+    };
 
 
     // _request = new XMLHttpRequest();
@@ -132,4 +135,4 @@ function main() {
 // };
 
 
-main();
+testCityDB();
