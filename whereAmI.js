@@ -9,6 +9,7 @@ const _WHEREIS_IPADDRESS = "ip=%ADDRESS%";              //  Where %ADDRESS% is t
 const _US_LOCALE = "en";
 const _CALLBACK_NAME = "useriata";
 
+var _startTime = Date.now();
 var _response;
 
 //  **  Functions
@@ -78,7 +79,9 @@ function sendAjax(queryString) {
 /**
  * Runs when the user presses the Where Am I? button
  */
-function whereAmI() {
+function runWhereAmI() {
+
+    _startTime = Date.now();
     sendAjax(makeWhereAmIQueryString());
 };
 
@@ -107,16 +110,16 @@ function renderWhereIAm (response) {
         colonPos = resultCoords.indexOf(":");
     };
     if (colonPos > -1) {
-        let resultLat = response.coordinates.substring(0, colonPos);
-        let resultLon = response.coordinates.substring(colonPos + 1);
+        resultLat = resultCoords.substring(0, colonPos);
+        resultLon = resultCoords.substring(colonPos + 1);
     }
     
     let msgLine = "User location: " + resultCityName + " (" + resultCityCode + ") in " + resultCountryName + ".";
     if (resultLat != "") {
-        msgLine += " Coordinates (Latitude, Longitude): " + resultLat + ", " + resultLon + "." +
-                    " Query took " + queryLength + " milliseconds.";
+        msgLine += " Coordinates (Latitude, Longitude): " + resultLat + ", " + resultLon + "."
     };
-
+    
+    msgLine += " Query took " + queryLength + " milliseconds.";
     msgResponse += msgLine + "\n";
     
     $("#text-display").text(existingText + msgResponse);
