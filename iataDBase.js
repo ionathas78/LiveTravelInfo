@@ -6,14 +6,19 @@ const citiesURL = "https://github.com/SabrinaCat/LiveTravelInfo/master/Assets/ci
 var _citiesDB;
 
 
-function main() {
+function returnCityInfo() {
+    
+} 
+
+
+// function main() {
     // _request = new XMLHttpRequest();
     // _request.open("GET", _CORS_SERVER + citiesURL);
     // // _request.responseType = "json";
     // _request.send();
 
-    sendAjax_CORS(citiesURL);
-};
+//     sendAjax_CORS(citiesURL);
+// };
 
 
 // _request.onload = function() {
@@ -22,22 +27,22 @@ function main() {
 //     console.log(_citiesDB);
 // };
 
-/**
- * Send specified Ajax query
- * @param {*} queryString Full API Call, including http(s)://
- */
-function sendAjax_CORS(queryString) {
-    queryString = _CORS_SERVER + queryString;
+// /**
+//  * Send specified Ajax query
+//  * @param {*} queryString Full API Call, including http(s)://
+//  */
+// // function sendAjax_CORS(queryString) {
+//     queryString = _CORS_SERVER + queryString;
 
-    $.ajax({
-        method: "GET",
-        url: queryString,
-        // headers: {"X-Access-Token": _AIRLINE_TOKEN}
-    }).then(function (response) {
-        _citiesDB = response;
-        console.log(response);
-    });
-};
+//     $.ajax({
+//         method: "GET",
+//         url: queryString,
+//         // headers: {"X-Access-Token": _AIRLINE_TOKEN}
+//     }).then(function (response) {
+//         _citiesDB = response;
+//         console.log(response);
+//     });
+// };
 
 
 main();
