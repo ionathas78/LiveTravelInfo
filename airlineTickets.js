@@ -137,6 +137,10 @@ function renderTickets(response) {
     textBox.text(existingText + msgResponse);
 };
 
+/**
+ * Given the TravelPayouts API Ticket Class code, returns the name of the class
+ * @param {Number} classCode Ticket Class code from the API response
+ */
 function returnTripClass(classCode) {
     let returnString = "";
     switch (classCode) {
