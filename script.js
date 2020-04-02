@@ -1,28 +1,135 @@
 // GET https://prime.exchangerate-api.com/v5/YOUR-API-KEY/latest/USD
 // APIkey: 09e9c25cfea5c28f56798f1c
 
-{
-	"result": "success",
-	"documentation": "https://www.exchangerate-api.com/docs",
-	"terms_of_use": "https://www.exchangerate-api.com/terms",
-	"time_zone": "UTC",
-	"time_last_update": 1580947200,
-	"time_next_update": 1580950860,
-	"base": "USD",
-	"conversion_rates": {
-		"USD": 1,
-		"AUD": 1.4817,
-		"BGN": 1.7741,
-		"CAD": 1.3168,
-		"CHF": 0.9774,
-		"CNY": 6.9454,
-		"EGP": 15.7361,
-		"EUR": 0.9013,
-		"GBP": 0.7679,
-		"...": 7.8536,
-		"...": 1.3127,
-		"...": 7.4722, etc. etc.
-	}
+const _EXCHANGERATE_APIKEY = "09e9c25cfea5c28f56798f1c";
+const _EXCHANGERATE_BASE = "https://prime.exchangerate-api.com/v5";
+const _EXCHANGERATE_PAIRREQUEST = "pair";								//	Followed by "USD/EUR" to convert $$ to €
+const _EXCHANGERATE_LATESTREQUEST = "latest";							//	Followed by "USD" for a list of $$ conversions
+
+const _DEFAULT_SOURCECURRENCY = "USD";
+
+var queryStart = new Date();
+var _sourceCurrency = "";
+var _destinationCurrency = "";
+
+// {
+// 	"result": "success",
+// 	"documentation": "https://www.exchangerate-api.com/docs",
+// 	"terms_of_use": "https://www.exchangerate-api.com/terms",
+// 	"time_zone": "UTC",
+// 	"time_last_update": 1580947200,
+// 	"time_next_update": 1580950860,
+// 	"base": "USD",
+// 	"conversion_rates": {
+// 		"USD": 1,
+// 		"AUD": 1.4817,
+// 		"BGN": 1.7741,
+// 		"CAD": 1.3168,
+// 		"CHF": 0.9774,
+// 		"CNY": 6.9454,
+// 		"EGP": 15.7361,
+// 		"EUR": 0.9013,
+// 		"GBP": 0.7679,
+// 		"...": 7.8536,
+// 		"...": 1.3127,
+// 		"...": 7.4722, etc. etc.
+// 	}
+// }
+
+/**
+ * Constructs query string for API call for pair exchange rates. PAID SUBSCRIPTION ONLY!
+ * @param {Text} convertFrom 3-letter code for source currency
+ * @param {Text} convertTo 3-letter code for destination currency
+ */
+function makeCurrencyPairQuery(convertFrom, convertTo) {
+	var apiCall = _EXCHANGERATE_BASE;
+	var queryType = _EXCHANGERATE_PAIRREQUEST;
+
+    var queryString = "";
+
+    var apiKey = _EXCHANGERATE_APIKEY;
+    
+	queryString = apiCall + "/" + apiKey + "/" + queryType + "/" + convertFrom + "/" + convertTo;
+	
+	return queryString;
+}
+
+/**
+ * Constructs query string for API call for general exchange rates
+ * @param {Text} convertFrom 3-letter code for source currency
+ */
+function makeCurrencyLatestQuery(convertFrom) {
+	var apiCall = _EXCHANGERATE_BASE;
+	var queryType = _EXCHANGERATE_LATESTREQUEST;
+
+    var queryString = "";
+
+    var apiKey = _EXCHANGERATE_APIKEY;
+    
+	queryString = apiCall + "/" + apiKey + "/" + queryType + "/" + convertFrom;
+	
+	return queryString;
+}
+
+/**
+ * Makes the API call
+ * @param {Text} queryString Query to pose to API
+ */
+function sendAjax_Exchange(queryString) {
+    $.ajax({
+        method: "GET",
+        url: queryString,
+    }).then(function (response) {
+		returnCurrencyConversion(response);
+    });
+};
+
+/**
+ * Builds and runs the API call to get the current exchange rates for the source currency
+ * @param {Text} convertFrom 3-letter Code for source currency
+ * @param {Text} convertTo 3-letter Code for destination currency.
+ */
+function getCurrencyConversion(convertFrom, convertTo) {
+	_sourceCurrency = convertFrom;
+	_destinationCurrency = convertTo;
+
+	sendAjax_Exchange(makeCurrencyLatestQuery(convertFrom));
+}
+
+/**
+ * Displays Exchange Rate to screen
+ * @param {Object} apiResponse Response package from API call
+ */
+function returnCurrencyConversion(apiResponse) {
+	let conversionRates = apiResponse.conversion_rates;
+	
+	let sourceRate = "1";
+	let destinationRate = conversionRates[_destinationCurrency];
+	let exchangeFloat = parseFloat(destinationRate).toFixed(3);
+
+	let textBox = $("#text-display");
+    let existingText = textBox.text() + "\n\n";
+    let msgResponse = "Currency Rate fetch:\n";
+ 
+	let queryEnd = new Date();
+    let queryLength = queryEnd.getTime() - _queryStart.getTime();
+
+    msgResponse += _sourceCurrency + " to " + _destinationCurrency + " exchange rate is " + sourceRate + ":" + exchangeFloat + ".\n";
+    msgResponse += "Query took: " + queryLength + " milliseconds."
+
+    textBox.text(existingText + msgResponse);
+}
+
+
+/**
+ * Runs when the user clicks the 'Get Currency Exchange' button
+ */
+function runCurrencyConversionTest() {
+	var userInput = $("#destination-currency").val();
+	var defaultSourceCurrency = _DEFAULT_SOURCECURRENCY;
+
+	_queryStart = new Date();
+	getCurrencyConversion(defaultSourceCurrency, userInput);
 }
 
 // Currency Code	Currency Name	Country
