@@ -205,11 +205,12 @@ function countriesDropdown(container){
         ZAM: "Zambia",
         ZIM: "Zimbabwe"
         }
+    }
     var countrySelect = getElementById("container");
     fillSelector();
     
 
-    function fillSelector () {
+    /*function fillSelector () {
 
             <select> for (var key in countries) </select>
             <select> out += "<option value="">" + countries[key] + "</option>";</select>
