@@ -1,4 +1,4 @@
-p{
+h1{
     text-align: center;
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
@@ -7,9 +7,10 @@ p{
 		-1px -1px 0 white,
 		1px -1px 0 white,
 		-1px 1px 0 white,
-		1px 1px 0 white;
+        1px 1px 0 white;
+    font-size: 500%;
 }
-h1{
+h2{
     text-align: center;
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
@@ -39,9 +40,38 @@ li:hover{
     background: lighten(#333, 10%);
 
 }
-#currencyExchange{
+/* #currencyExchange{
     background-color: #eeeeee;
-}
+} */
 i{
     height: 20px;
 }
+a{
+    color: #ffffff;
+}
+/* Small only */
+@media screen and (max-width: 375px) {
+    h1{
+        font-size: 250%;
+    }
+    #currencyExchange{
+        margin: auto;
+    }
+    
+}
+
+/* Medium and up */
+@media screen and (min-width: 40em) {
+    #currencyExchanfe{
+        width: 80%;
+    }
+}
+
+/* Medium only */
+@media screen and (min-width: 40em) and (max-width: 63.9375em) {}
+
+/* Large and up */
+@media screen and (min-width: 64em) {}
+
+/* Large only */
+@media screen and (min-width: 64em) and (max-width: 74.9375em) {}

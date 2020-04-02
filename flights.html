@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Page</title>
+    <link rel="stylesheet" href="Foundation-6.6.1-CSS-project/assets/css/app.css" />
+    <!-- Compressed CSS -->
+    <link rel="stylesheet" href="Foundation-6.6.1-CSS-project/index.html"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,500;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="flights.css">
+
+
+</head>
+<body>
+    <div class="top-bar">
+        <ul class="menu" data-dropdown-menu>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="citySearch.html">Last Trip Database</a></li>
+            <li><a href="contact.html" >Contact Us</a></li>
+            
+        </ul>
+    </div>
+    <div>
+        <h1 style="font-size: 500%;">Find a Flight</h1>
+    </div>
+
+    <div class="grid-x grid-margin-x" data-equalizer data-equalize-on="medium" id="dates">
+        <div class="cell small-4">
+            <div class="callout" id="departure" style="background-color: #f8f8f8;">
+                <div  >
+                    <label><strong>Departure City</strong></label>
+                    <input type="text" id="departCity">
+                </div>
+            </div>
+            <div class="callout" id="arrival" style="background-color: #f8f8f8">
+                <div > 
+                    <label><strong>Arrival City</strong></label>
+                    <input type="text" id="ArriveCity">
+                </div>
+            </div>
+            
+        </div>
+        <div class="cell small-8">
+            <div class="callout">
+                <div  id="flightDisplay"></div>
+    
+            </div>
+        </div>
+        
+    </div>
+
+     <script src="Foundation-6.6.1-CSS-project/assets/js/app.js"></script>
+    <script src="Foundation-6.6.1-CSS-project/assets/js/app.js.map"></script>
+    <script src="js/vendor/foundation.min.js"></script>
+</body>
+</html>
