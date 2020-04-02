@@ -30,13 +30,15 @@
             <div class="callout" id="departure" style="background-color: #f8f8f8;">
                 <div  >
                     <label><strong>Departure City</strong></label>
-                    <input type="text" id="departCity">
+                    <input type="text" id="test-tickets" placeholder="Destination City Code">
+                    <button class="button" onclick="runTicketTest()">Get Tickets</button>
                 </div>
             </div>
             <div class="callout" id="arrival" style="background-color: #f8f8f8">
                 <div > 
-                    <label><strong>Arrival City</strong></label>
-                    <input type="text" id="ArriveCity">
+                    <label><strong>Get City Code</strong></label>
+                    <input type="text" id="city-search" placeholder="City Name">
+                    <button class="button" onclick="runCitySearch()">Get City Code</button>
                 </div>
             </div>
             
@@ -46,9 +48,13 @@
         </main>
         
     </div>
-
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5v˜ZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
      <script src="Foundation-6.6.1-CSS-project/assets/js/app.js"></script>
     <script src="Foundation-6.6.1-CSS-project/assets/js/app.js.map"></script>
     <script src="js/vendor/foundation.min.js"></script>
+    <script src="cors-anywhere.js"></script>
+    <script src="whereAmI.js"></script>
+    <script src="airlineTickets.js"></script>
 </body>
 </html>
