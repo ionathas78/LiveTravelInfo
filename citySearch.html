@@ -20,17 +20,18 @@
             <li><a href="index.html">Home</a></li>
             <li><a href="#">Last Trip Database</a></li>
             <li><a href="contact.html" >Contact Us</a></li>
+            
         </ul>
     </div>
 
-    <div>
-        <p style="font-size: 500%;">Your City Search here</p>
-    </div>
+    
+    <h1>Your City Search here</h1>
+    
 
     <div class="grid-x grid-margin-x" data-equalizer data-equalize-on="medium" id="test-eq">
      
-        <div class="cell small-4">
-            <div class="callout align-left" id="currencyExchange">
+        <div class="cell small-8 larger-3 medium-4" id="exchangeCallout">
+            <div class="callout align-left" id="currencyExchange"  style="background-color: #f8f8f8">
                 <div class="small-2 cell">
                     <div class="input-group">
                         <span class="input-group-label">$</span>
@@ -39,7 +40,7 @@
                           <input type="submit" class="button" value="Submit">
                         </div>
                       </div>
-                   
+                   <!--make the convertion box smaller-->
                   </div>
                   <div class="small-2 cell">
                     <div class="input-group">
@@ -55,11 +56,12 @@
             </div>
            
         </div>
-        <div class="cell small-8">
-            <div class="callout">
-                <div  id="liveVideo"></div>
-    
-            </div>
+        
+    </div>
+    <div class="cell small-8" style="margin-top: 4%;">
+        <div class="callout">
+            <div  id="liveVideo"></div>
+
         </div>
     </div>
 
@@ -68,12 +70,16 @@
 
 
     <div class="row">
-        <h1>5 Day forecast</h1>
+        <h2>5 Day forecast</h2>
         <div class="callout" id="forecast">
 
         </div>
         
     </div>
+
+    <div id="flightBtn">
+        <a href="flights.html" class="button success float-center" style="width: 17%;"><strong>Find A Flight</strong></a>
+        </div>
 
     
     
