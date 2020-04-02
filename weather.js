@@ -148,7 +148,7 @@ function queryWeather(searchTerm, queryType) {
     };
 
     queryString = _OPENWEATHER_BASE + apiCall + searchString + apiKey;
-    runAjaxQuery(queryString, queryType);
+    runAjaxQuery_Weather(queryString, queryType);
     // console.log(queryString);
 };
 
@@ -167,7 +167,7 @@ function queryPlaceByLatLon(latitudeValue, longitudeValue) {
 
     queryString = apiCall + _MAPQUEST_REVERSE_APICALL + locationString + apiKey;
 
-    runAjaxQuery(queryString, _QTYPE_PLACE);
+    runAjaxQuery_Weather(queryString, _QTYPE_PLACE);
 };
 
 /**
@@ -183,7 +183,7 @@ function queryPlaceByCityState(cityName, stateName) {
 
     queryString = apiCall + _MAPQUEST_ADDRESS_APICALL + locationString + apiKey;
 
-    runAjaxQuery(queryString, _QTYPE_PLACE);
+    runAjaxQuery_Weather(queryString, _QTYPE_PLACE);
 
 };
 
@@ -202,7 +202,7 @@ function queryUVIndex(latitudeValue, longitudeValue) {
 
     queryString = apiCall + _OPENWEATHER_UV_APICALL + latLonString + apiKey;
 
-    runAjaxQuery(queryString, _QTYPE_UVINDEX);
+    runAjaxQuery_Weather(queryString, _QTYPE_UVINDEX);
 }
 
 
@@ -212,7 +212,7 @@ function queryUVIndex(latitudeValue, longitudeValue) {
  * @param {Text} queryString URL to query
  * @param {Number} queryType 1 - Current Weather, 2 - 5-Day Forecast
  */
-function runAjaxQuery(queryString, queryType) {
+function runAjaxQuery_Weather(queryString, queryType) {
     $.ajax({
         url: queryString,
         method: "GET"

@@ -80,8 +80,9 @@ function makeAirlineQueryString(originCode, destinationCode, departDate, returnD
  * Send specified Ajax query
  * @param {*} queryString Full API Call, including http(s)://
  */
-function sendAjax_CORS(queryString) {
+function sendAjax_CORS_Airline(queryString) {
     queryString = _CORS_SERVER + queryString;
+    // console.log(queryString);
 
     $.ajax({
         method: "GET",
@@ -103,7 +104,7 @@ function runTicketTest() {
     let userInput = $("#test-tickets").val();
 
     _queryStart = new Date();
-    sendAjax_CORS(makeAirlineQueryString("", userInput));
+    sendAjax_CORS_Airline(makeAirlineQueryString("", userInput));
 };
 
 /**
@@ -126,13 +127,14 @@ function renderTickets(response) {
         let resultClass = returnTripClass(resultArray[i].trip_class);
 
         let msgLine = i + ": " + resultOrigin + " to " + resultDestination + "(depart " + resultDepart + "): $" +
-                    resultPrice + ", " + resultClass + " class. Query took: " + queryLength + " milliseconds.";
+                    resultPrice + ", " + resultClass + " class.";
 
         msgResponse += msgLine + "\n";
     };
     if (resultArray.length < 1) {
         msgResponse += "No tickets found!";
     }
+    msgResponse += "Query took: " + queryLength + " milliseconds."
 
     textBox.text(existingText + msgResponse);
 };
@@ -162,7 +164,7 @@ function returnTripClass(classCode) {
 
 //  **  Logic
 
-// sendAjax_CORS(makeAirlineQueryString("", "MEX"));
+// sendAjax_CORS_Airline(makeAirlineQueryString("", "MEX"));
 
 
 
