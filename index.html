@@ -38,8 +38,8 @@
     <div class="callout" id="searchCallout">
         <p style="font-size: large;">Begin your next journey now</p>
 
-        <div><input type="text"/>
-          <select>
+        <div><input id="city-input" type="text"/>
+          <select id="country-select">
             <option value="AF">Afghanistan</option>
             <option value="AX">Åland Islands</option>
             <option value="AL">Albania</option>
@@ -291,6 +291,7 @@
           </select>
         </div>
         <button onclick="runCitySearch()"class="button alert float-center"> Search</button>
+        <p id="error-text" style="color: red; font-weight: 200%; display: none;"></p>
 
     </div>
         
@@ -301,9 +302,12 @@
 
     
 
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5v˜ZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="Foundation-6.6.1-CSS-project/assets/js/app.js"></script>
-    <script src="Foundation-6.6.1-CSS-project/assets/js/app.js.map"></script>
+    <!-- <script src="Foundation-6.6.1-CSS-project/assets/js/app.js.map"></script> -->
     <!-- <script src="js/vendor/foundation.min.js"></script> -->
+    <script src="Assets/cities.js" type="text/javascript"></script>
+    <script src="Assets/countries.js" type="text/javascript"></script>
     <script src="iataDBase.js" type="text/javascript"></script>
     
 

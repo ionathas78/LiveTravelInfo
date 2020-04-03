@@ -13,12 +13,73 @@ const _FUZZYMATCH_THRESHOLD = 0.65;
 var _citiesDB;
 var _queryStart = new Date();
 
+
+/**
+ * Runs when the user clicks the Search button on the Index page
+ */
+function runCitySearch() {
+    let cityInput = $("#city-input").val();
+    let countryInput = $("#country-select").val();
+
+    let commaPos = -1;
+    let userCity = "";
+    let userCountry = "";
+
+    if (cityInput) {
+        commaPos = cityInput.indexOf(",");
+    }
+
+    if (commaPos > -1) {
+        userCity = cityInput.substring(0, commaPos).trim();
+        userCountry = returnCountryCode(cityInput.substring(commaPos + 1).trim());
+    } else {
+        userCity = cityInput.trim();
+        userCountry = countryInput;
+    }
+
+    let cityPick = returnCityInfo(userCity, userCountry, true);
+    if (!cityPick) {
+        let pError = $("#error-text");
+        let errorMsg = "Couldn't find city '" + userCity + ", " + userCountry + "'!";
+        
+        pError.text(errorMsg);
+        pError.show();  
+        return;
+    };
+
+    localStorage.setItem("travelDestination", JSON.stringify(cityPick));
+    window.location.href = "citySearch.html";
+}
+
+/**
+ * Use with the NEW keyword to create a new instance of a CityData container object
+ * @param {Text} cityName Name of city
+ * @param {Text} countryName Name of country in which the city resides
+ * @param {Text} cityCode IATA city code
+ * @param {Number} cityLatitude Latitude of city's coordinates
+ * @param {Number} cityLongitude Longitude of city's coordinates
+ * @param {Text} cityTimeZone Time Zone in which the city falls
+ */
+function CityData(cityName, countryName, cityCode, cityLatitude, cityLongitude, cityTimeZone) {
+    return {
+        name: cityName,
+        state: "",
+        country: countryName,
+        code: cityCode,
+        coords: {
+            lat: cityLatitude,
+            lon: cityLongitude
+        },
+        timeZone: cityTimeZone
+    };
+};
+
 /**
  * Returns city data from the cities DB file or _null_ if the city isn't found
  * @param {*} cityName Name of city for which to search
  * @param {*} countryCode Name of country in which the city falls. Uses "US" by default.
  */
-function returnCityInfo(cityName, countryCode) {
+function returnCityInfo(cityName, countryCode, doIgnoreCountryToMatch) {
     // let startTime = Date.now();
     let returnObject = null;
 
@@ -51,6 +112,10 @@ function returnCityInfo(cityName, countryCode) {
             returnObject = new CityData(matchCity.name, matchCity.country_code, matchCity.code, matchCity.coordinates.lat, matchCity.coordinates.lon, matchCity.time_zone);
         };
     };
+
+    if (!returnObject && doIgnoreCountryToMatch && (countryCode != "")) {
+        returnObject = returnCityInfo(cityName, "", false);           
+    }
 
     // let endTime = Date.now();
     // console.log("Lookup operation took " + (endTime - startTime) + " seconds.");
@@ -96,64 +161,12 @@ function returnCountryCode (countryName) {
     return returnString;
 };
 
-/**
- * Use with the NEW keyword to create a new instance of a CityData container object
- * @param {Text} cityName Name of city
- * @param {Text} countryName Name of country in which the city resides
- * @param {Text} cityCode IATA city code
- * @param {Number} cityLatitude Latitude of city's coordinates
- * @param {Number} cityLongitude Longitude of city's coordinates
- * @param {Text} cityTimeZone Time Zone in which the city falls
- */
-function CityData(cityName, countryName, cityCode, cityLatitude, cityLongitude, cityTimeZone) {
-    return {
-        name: cityName,
-        state: "",
-        country: countryName,
-        code: cityCode,
-        coords: {
-            lat: cityLatitude,
-            lon: cityLongitude
-        },
-        timeZone: cityTimeZone
-    };
-};
-
-/**
- * Given a city and its expected country, displays the results to the page.
- * @param {*} findCity 
- * @param {*} findCountry 
- */
-function renderCity (findCity, findCountry) {
-    let textBox = $("#text-display");
-    let existingText = textBox.text() + "\n\n";
-    
-    let cityResult = returnCityInfo(findCity, findCountry);
-    let msgOutput = "Results of city code lookup:\n";
-    let queryEnd = new Date();
-    let queryLength = queryEnd.getTime() - _queryStart.getTime();
-
-    if (cityResult) {
-        msgOutput += cityResult.name + ", " + cityResult.country + " (" + cityResult.code + "). " +
-                    "LatLon: (" + cityResult.coords.lat + ", " + cityResult.coords.lon + "). " +
-                    "Time Zone: " + cityResult.timeZone + "\n" +
-                    "Search took " + queryLength + " milliseconds.";
-    } else {
-        let userInput = findCity;
-        if (findCountry) {
-            userInput += ", " + findCountry
-        }
-        msgOutput += "Couldn't find '" + userInput + "'!"
-    }
-    
-    textBox.text(existingText + msgOutput);
-    };
 
 /**
  * Test bed for DB search function.
  */
 function testCityDB() {
-    let testCity = returnCityInfo(_TEST_CITYNAME, _TEST_COUNTRYCODE);
+    let testCity = returnCityInfo(_TEST_CITYNAME, _TEST_COUNTRYCODE, true);
     console.log(testCity);
     let userInput, msgOutput;
 
@@ -177,7 +190,7 @@ function testCityDB() {
         };
 
         startTime = new Date();
-        testCity = returnCityInfo(userCity, userState);
+        testCity = returnCityInfo(userCity, userState, false);
         endTime = new Date();
         elapsedTime = (endTime.getMilliseconds() - startTime.getMilliseconds())
 
@@ -204,9 +217,9 @@ function testCityDB() {
 };
 
 /**
- * Runs when the user clicks the Get City Code button
+ * Runs when the user clicks the Get City Code button on the Test Page.
  */
-function runCitySearch() {
+function testCitySearch() {
     let userInput = $("#city-search").val();
     
     let commaPos = -1;
@@ -229,10 +242,42 @@ function runCitySearch() {
 }
 
 /**
+ * Given a city and its expected country, displays the results to the test bed page.
+ * @param {*} findCity 
+ * @param {*} findCountry 
+ */
+function renderCity (findCity, findCountry) {
+    let textBox = $("#text-display");
+    let existingText = textBox.text() + "\n\n";
+    
+    let cityResult = returnCityInfo(findCity, findCountry, false);
+    let msgOutput = "Results of city code lookup:\n";
+    let queryEnd = new Date();
+    let queryLength = queryEnd.getTime() - _queryStart.getTime();
+
+    if (cityResult) {
+        msgOutput += cityResult.name + ", " + cityResult.country + " (" + cityResult.code + "). " +
+                    "LatLon: (" + cityResult.coords.lat + ", " + cityResult.coords.lon + "). " +
+                    "Time Zone: " + cityResult.timeZone + "\n" +
+                    "Search took " + queryLength + " milliseconds.";
+    } else {
+        let userInput = findCity;
+        if (findCountry) {
+            userInput += ", " + findCountry
+        }
+        msgOutput += "Couldn't find '" + userInput + "'!"
+    }
+    
+    textBox.text(existingText + msgOutput);
+    };
+
+
+
+/**
  * Compares two strings and returns the percentage of similarity
  * @param {Number} txt1 First string to compare
  * @param {Number} txt2 Second string to compare
- * This algorithm copyright 2015 by Jonathan Andrews; usage per MIT license.
+ * Original algorithm copyright 2015 by Jonathan Andrews; open for use per MIT license.
  */
 function textPercentMatch (txt1, txt2) {
     let returnPercent = -1;
@@ -297,14 +342,12 @@ function countString(baseText, searchText) {
     let returnCount = 0;
     let characterPos = 0;
     let endPos = baseText.length - 1;
-
     do {
         characterPos = baseText.indexOf(searchText, characterPos + 1);
         if (characterPos > 0) {
             returnCount++;
         };
     } while ((characterPos > -1) && (characterPos < endPos));
-
     return returnCount;
 };
 
