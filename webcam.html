@@ -11,7 +11,7 @@
     so the user can select one, not all of these have webcams as this is not pulled
 from the webcam api. These are also in aplha 3 format which will work with Jonathan's airline codes-->
     <label>Select Country
-        <select>
+        <select id="select-country" disabled>
             <option value="AF">Afghanistan</option>
             <option value="AX">Åland Islands</option>
             <option value="AL">Albania</option>
@@ -262,7 +262,17 @@ from the webcam api. These are also in aplha 3 format which will work with Jonat
             <option value="ZW">Zimbabwe</option>
         </select> 
     </label>
-
+    <hr>
+    <label>Select Camera
+        <select id="select-cam">
+            <!-- Cam Feed list goes here -->
+        </select>
+        <button onclick="showCam()">Get Live Feed</button>
+    </label>
+    <br>
+    <iframe>
+        <!-- Video feed goes here -->
+    </iframe>
        <!--<script>
         
         function fillSelector () {

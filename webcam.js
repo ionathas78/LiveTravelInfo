@@ -1,17 +1,102 @@
 //my current working api key, someone told me api keys were specific to a device but I don't think thats true
 var myKey = "FfGQyFVlBphWzW7wWdUNrZ5pxRZ46Y6d";
 
+const _WINDY_BASE = "https://api.windy.com/api/webcams/v2";
+const _WINDY_NEARBY_ENDPOINT = "list/nearby=%LAT%,%LON%,%DISTANCE%";
+const _WINDY_WEBCAMS = "show=webcams:location,image,player";
+const _WINDY_SORTBY = "orderby=%SORT%";
+const _WINDY_APIKEY = "key=FfGQyFVlBphWzW7wWdUNrZ5pxRZ46Y6d";
+
+var _camList = [];
+
 //this call pulls the full list of countries that have available webcams. The format however is
 //alpha 2 letter codes for each country
 //URL format is " https://api.windy.com/api/webcams/v2" + "/list?show=countries" ex: a specific country
 //would be "https://api.windy.com/api/webcams/v2/list/country=DE" DE being the alpha 2 code for Germany
-$.ajax({
-    url: "https://api.windy.com/api/webcams/v2/list?show=countries" + `&key=${myKey}`,
-    method: 'GET'
+
+getNearbyWebcams(30.267, -97.733, 10);
+
+function getCountryList() {
+    $.ajax({
+        url: "https://api.windy.com/api/webcams/v2/list?show=countries" + `&key=${myKey}`,
+        method: 'GET'
+    }
+    ).then(function(data){
+        console.log(data);
+    });
+};
+
+
+function getNearbyWebcams (latitudeValue, longitudeValue, maxDistance) {
+    let apiBase = _WINDY_BASE;
+    let nearbyEndpoint = _WINDY_NEARBY_ENDPOINT.replace("%LAT%", latitudeValue);
+    nearbyEndpoint = nearbyEndpoint.replace("%LON%", longitudeValue);
+    nearbyEndpoint = nearbyEndpoint.replace("%DISTANCE%", maxDistance);
+    let webcamsQuery = _WINDY_WEBCAMS;
+    let sortByPopularity = _WINDY_SORTBY.replace("%SORT%", "popularity");
+    let queryString = apiBase + "/" + nearbyEndpoint + "?" + webcamsQuery + "&" + sortByPopularity + `&key=${myKey}`;
+    console.log(queryString);
+
+    $.ajax({
+        url: queryString,
+        method: "GET"
+    }).then (function (response) {
+        console.log(response);
+        populateWebcamList(response);
+    })
 }
-).then(function(data){
-    console.log(data);
-});
+
+
+function populateWebcamList (response) {
+    let camSelect = $("#select-cam");
+    camSelect.empty();
+    _camList = [];
+
+    for (var i = 0; i < response.result.webcams.length; i++) {
+        let camId = response.result.webcams[i].id;
+        let camTitle = response.result.webcams[i].title + "-" + i;
+        let camEmbedLink = availablePlayerLink(response.result.webcams[i].player);
+
+        if (camEmbedLink != "") {
+            let camOption = $('<option value="' + camId + '">' + camTitle + '</option>');
+            _camList.push({id: camId, url: camEmbedLink});
+            camSelect.append(camOption);
+        };
+    };
+};
+
+function availablePlayerLink(playerObject) {
+    let returnString = "";
+    if (playerObject.live.available) {
+        returnString = playerObject.live.embed;
+    } else if (playerObject.day.available) {
+        returnString = playerObject.day.embed;
+    } else if (playerObject.month.available) {
+        returnString = playerObject.month.embed;
+    } else if (playerObject.year.available) {
+        returnString = playerObject.year.embed;
+    } else if (playerObject.lifetime.available) {
+        returnString = playerObject.lifetime.embed;
+    };
+    return returnString;
+};
+
+function showCam () {
+    let camId = $("#select-cam").val();
+    if (!camId) {
+        return;
+    };
+
+    let urlString = "";
+    for (var obj of _camList) {
+        if (obj.id == camId) {
+            urlString = obj.url;
+            break;
+        };
+    };
+
+    $("iframe").attr("src", urlString);
+};
 
 //I have a variable for user input that I would like to sync to my selector menu in the html
 //My thoughts were to use a code that makes the alpha 2 lettering = to its alpha 3 counterpart for each
@@ -20,13 +105,13 @@ $.ajax({
 
 var select= {
 AF: "Afghanistan",
-AX: "Åland Islands"
+AX: "Åland Islands",
 AL: "Albania",
 DZ: "Algeria",
 AD: "Andorra",
 AO: "Angola",
 AI: "Anguilla",
-AQ: "Antarctica"
+AQ: "Antarctica",
 AG: "Antigua and Barbuda",
 AR: "Argentina",
 AM: "Armenia",
@@ -98,7 +183,7 @@ FI: "Finland",
 FR: "France",
 GF: "French Guiana",
 PF: "French Polynesia",
-TF: "French Southern Territories"
+TF: "French Southern Territories",
 GA: "Gabon",
 GM: "Gambia",
 GE: "Georgia",
@@ -127,7 +212,7 @@ IN: "Indonesia",
 IR: "Iran",
 IQ: "Iraq",
 IE: "Ireland",
-IM: "Isle of Man"
+IM: "Isle of Man",
 IL: "Israel",
 IT: "Italy",
 JM: "Jamaica",
@@ -137,7 +222,7 @@ JO: "Jordan",
 KZ: "Kazakhstan",
 KE: "Kenya",
 KI: "Kiribati",
-KP: "North Korea"
+KP: "North Korea",
 KR: "South Korea",
 KW: "Kuwait",
 KG: "Kyrgyzstan",
@@ -207,7 +292,7 @@ RE: "Réunion",
 BL: "Saint Barthélemy",
 SH: "Saint Helena, Ascension and Tristan da Cunha",
 KN: "Saint Kitts and Nevis",
-LC: "Saint Lucia"
+LC: "Saint Lucia",
 MF: "Saint Martin",
 PM: "Saint Pierre and Miquelon",
 VC: "Saint Vincent and the Grenadines",
@@ -220,7 +305,7 @@ RS: "Serbia",
 SC: "Seychelles",
 SL: "Sierra Leone",
 SG: "Singapore",
-SX: "Sint Maarten"
+SX: "Sint Maarten",
 SK: "Slovakia",
 SI: "Slovenia",
 SB: "Solomon Islands",
@@ -248,10 +333,10 @@ TT: "Trinidad and Tobago",
 TN: "Tunisia",
 TR: "Turkey",
 TM: "Turkmenistan",
-TC: "Turks and Caicos Islands"
+TC: "Turks and Caicos Islands",
 TV: "Tuvalu",
 UG: "Uganda",
-UE: "Ukraine"
+UE: "Ukraine",
 AE: "United Arab Emirates",
 GB: "United Kingdom of Great Britain and Northern Ireland",
 UM: "United States Minor Outlying Islands",
@@ -267,7 +352,8 @@ WF: "Wallis and Futuna",
 EH: "Western Sahara",
 YE: "Yemen",
 ZM: "Zambia",
-ZW: "Zimbabwe"};
+ZW: "Zimbabwe"
+};
 
 
 
@@ -289,14 +375,15 @@ ZW: "Zimbabwe"};
 //you can use "/api/webcams/v2/list/orderby=popularity,desc" and this will sort the most popular feeds in descending order.
 // how to take that and apply it directly to a specific country's webcam set is not yet understood by me
 
-$.ajax({
-    url: "https://api.windy.com/api/webcams/v2/list?show=webcams:image,location;categories" + `&key=${myKey}`,
-    method: 'GET',
-}
-).then(function(data){
-    console.log(data)
-});
-
+function getCategoriesList() {
+    $.ajax({
+        url: "https://api.windy.com/api/webcams/v2/list?show=webcams:image,location;categories" + `&key=${myKey}`,
+        method: 'GET',
+    }
+    ).then(function(data){
+        console.log(data)
+    });
+};
 
 
 //So what I was currently working through was how to call a specific country, then get the list of webcam IDs
