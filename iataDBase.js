@@ -4,6 +4,7 @@ const _TEST_CITYNAME = "Austin";
 const _TEST_COUNTRYCODE = "";
 const _DEFAULT_COUNTRYCODE = "US";
 const _FUZZYMATCH_THRESHOLD = 0.65;
+const _DESTINATIONSET_MAXLENGTH = 5;
 
 // const _CORS_SERVER = "https://polar-bayou-73801.herokuapp.com/";
 // const citiesURL = "https://github.com/SabrinaCat/LiveTravelInfo/blob/master/Assets/cities.json";
@@ -47,15 +48,28 @@ function runCitySearch() {
         return;
     };
 
-    localStorage.setItem("travelDestination", JSON.stringify(cityPick));
+    let destinationSet = localStorage.getItem("travelDestination");
+    if (!destinationSet) {
+        destinationSet = [];
+    } else {
+        destinationSet = JSON.parse(destinationSet);
+    }
+
+    destinationSet.push(cityPick);
+    if (destinationSet.length > _DESTINATIONSET_MAXLENGTH) {
+        destinationSet.shift();
+    }
+
+    localStorage.setItem("travelDestination", JSON.stringify(destinationSet));
     window.location.href = "citySearch.html";
 }
 
 function populateCitySearchPage() {
     let userDestination = JSON.parse(localStorage.getItem("travelDestination"));
 
-    console.log(userDestination);
-    $("#city-name").text(userDestination.name);
+    finalDestination = userDestination[userDestination.length - 1];
+    console.log(finalDestination);
+    $("#city-name").text(finalDestination.name);
 }
 
 /**
