@@ -63,10 +63,43 @@ label{
     margin-top: 10%;
 }
 
+#phoneHeader{
+    
+    
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    color:#000;
+    text-shadow:
+		-1px -1px 0 white,
+		1px -1px 0 white,
+		-1px 1px 0 white,
+		1px 1px 0 white;
+    
+}
+#emailHeader{
+    
+    
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    color:#000;
+    text-shadow:
+		-1px -1px 0 white,
+		1px -1px 0 white,
+		-1px 1px 0 white,
+		1px 1px 0 white;
+}
 
 
 /* Small only */
-@media screen and (max-width: 39.9375em) {}
+@media screen and (max-width: 39.9375em) {
+    #phoneHeader{
+        float: left;
+    }
+    #emailHeader{
+        float: left;
+    }
+
+}
 
 /* Medium and up */
 @media screen and (min-width: 40em) {}
