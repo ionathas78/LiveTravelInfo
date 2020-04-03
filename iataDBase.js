@@ -3,6 +3,8 @@
 const _TEST_CITYNAME = "Austin";
 const _TEST_COUNTRYCODE = "";
 const _DEFAULT_COUNTRYCODE = "US";
+const _FUZZYMATCH_THRESHOLD = 0.65;
+const _DESTINATIONSET_MAXLENGTH = 5;
 
 // const _CORS_SERVER = "https://polar-bayou-73801.herokuapp.com/";
 // const citiesURL = "https://github.com/SabrinaCat/LiveTravelInfo/blob/master/Assets/cities.json";
@@ -12,30 +14,63 @@ const _DEFAULT_COUNTRYCODE = "US";
 var _citiesDB;
 var _queryStart = new Date();
 
+
 /**
- * Returns city data from the cities DB file or _null_ if the city isn't found
- * @param {*} cityName Name of city for which to search
- * @param {*} countryCode Name of country in which the city falls. Uses "US" by default.
+ * Runs when the user clicks the Search button on the Index page
  */
-function returnCityInfo(cityName, countryCode) {
-    // let startTime = Date.now();
-    let returnObject = null;
+function runCitySearch() {
+    let cityInput = $("#city-input").val();
+    let countryInput = $("#country-select").val();
 
-    if (!countryCode) {
-        countryCode = "";
+    let commaPos = -1;
+    let userCity = "";
+    let userCountry = "";
+
+    if (cityInput) {
+        commaPos = cityInput.indexOf(",");
+    }
+
+    if (commaPos > -1) {
+        userCity = cityInput.substring(0, commaPos).trim();
+        userCountry = returnCountryCode(cityInput.substring(commaPos + 1).trim());
+    } else {
+        userCity = cityInput.trim();
+        userCountry = countryInput;
+    }
+
+    let cityPick = returnCityInfo(userCity, userCountry, true);
+    if (!cityPick) {
+        let pError = $("#error-text");
+        let errorMsg = "Couldn't find city '" + userCity + ", " + userCountry + "'!";
+        
+        pError.text(errorMsg);
+        pError.show();  
+        return;
     };
 
-    for (var city of citiesData) {
-        if ((city.name == cityName) && ((city.country_code == countryCode) || (countryCode == ""))) {
-            returnObject = new CityData(city.name, city.country_code, city.code, city.coordinates.lat, city.coordinates.lon, city.time_zone);
-            break;
-        };
-    };
+    let destinationSet = localStorage.getItem("travelDestination");
+    if (!destinationSet) {
+        destinationSet = [];
+    } else {
+        destinationSet = JSON.parse(destinationSet);
+    }
 
-    // let endTime = Date.now();
-    // console.log("Lookup operation took " + (endTime - startTime) + " seconds.");
-    return returnObject;
-};
+    destinationSet.push(cityPick);
+    if (destinationSet.length > _DESTINATIONSET_MAXLENGTH) {
+        destinationSet.shift();
+    }
+
+    localStorage.setItem("travelDestination", JSON.stringify(destinationSet));
+    window.location.href = "citySearch.html";
+}
+
+function populateCitySearchPage() {
+    let userDestination = JSON.parse(localStorage.getItem("travelDestination"));
+
+    finalDestination = userDestination[userDestination.length - 1];
+    console.log(finalDestination);
+    $("#city-name").text(finalDestination.name);
+}
 
 /**
  * Use with the NEW keyword to create a new instance of a CityData container object
@@ -61,40 +96,98 @@ function CityData(cityName, countryName, cityCode, cityLatitude, cityLongitude, 
 };
 
 /**
- * Given a city and its expected country, displays the results to the page.
- * @param {*} findCity 
- * @param {*} findCountry 
+ * Returns city data from the cities DB file or _null_ if the city isn't found
+ * @param {*} cityName Name of city for which to search
+ * @param {*} countryCode Name of country in which the city falls. Uses "US" by default.
  */
-function renderCity (findCity, findCountry) {
-    let textBox = $("#text-display");
-    let existingText = textBox.text() + "\n\n";
-    
-    let cityResult = returnCityInfo(findCity, findCountry);
-    let msgOutput = "Results of city code lookup:\n";
-    let queryEnd = new Date();
-    let queryLength = queryEnd.getTime() - _queryStart.getTime();
+function returnCityInfo(cityName, countryCode, doIgnoreCountryToMatch) {
+    // let startTime = Date.now();
+    let returnObject = null;
 
-    if (cityResult) {
-        msgOutput += cityResult.name + ", " + cityResult.country + " (" + cityResult.code + "). " +
-                    "LatLon: (" + cityResult.coords.lat + ", " + cityResult.coords.lon + "). " +
-                    "Time Zone: " + cityResult.timeZone + "\n" +
-                    "Search took " + queryLength + " milliseconds.";
-    } else {
-        let userInput = findCity;
-        if (findCountry) {
-            userInput += ", " + findCountry
-        }
-        msgOutput += "Couldn't find '" + userInput + "'!"
-    }
-    
-    textBox.text(existingText + msgOutput);
+    if (!countryCode) {
+        countryCode = "";
     };
+
+    for (var city of citiesData) {
+        if ((city.name == cityName) && ((city.country_code == countryCode) || (countryCode == ""))) {
+            returnObject = new CityData(city.name, city.country_code, city.code, city.coordinates.lat, city.coordinates.lon, city.time_zone);
+            break;
+        };
+    };
+
+    if (!returnObject) {
+        let matchCity;
+        let matchPercent = 0;
+        for (var fuzzyCity of citiesData) {
+            if ((countryCode == fuzzyCity.country_code) || (countryCode == "")) {
+                let testPercent = textPercentMatch(cityName, fuzzyCity.name)
+
+                if (testPercent > matchPercent) {
+                    matchPercent = testPercent;
+                    matchCity = fuzzyCity;
+                };
+            };
+        };
+
+        if (matchPercent >= _FUZZYMATCH_THRESHOLD) {
+            returnObject = new CityData(matchCity.name, matchCity.country_code, matchCity.code, matchCity.coordinates.lat, matchCity.coordinates.lon, matchCity.time_zone);
+        };
+    };
+
+    if (!returnObject && doIgnoreCountryToMatch && (countryCode != "")) {
+        returnObject = returnCityInfo(cityName, "", false);           
+    }
+
+    // let endTime = Date.now();
+    // console.log("Lookup operation took " + (endTime - startTime) + " seconds.");
+    return returnObject;
+};
+
+function returnCountryCode (countryName) {
+    let returnString = "";
+
+    for (var country of countriesData) {
+        if (country.name == countryName) {
+            returnString = country.code;
+            break;
+        };
+    };
+
+    if (returnString == "") {
+        for (var country of countriesData) {
+            if (country.code == countryName) {
+                returnString = countryName;
+                break;
+            };
+        };
+    };
+
+    if (returnString == "") {
+        let matchCode = "";
+        let matchPercent = 0;
+
+        for (var country of countriesData) {
+            let testPercent = textPercentMatch(countryName, country.name);
+            if (testPercent > matchPercent) {
+                matchPercent = testPercent;
+                matchCode = country.code;
+            };
+        };
+
+        if (matchPercent >= _FUZZYMATCH_THRESHOLD) {
+            returnString = matchCode;
+        }
+    };
+
+    return returnString;
+};
+
 
 /**
  * Test bed for DB search function.
  */
 function testCityDB() {
-    let testCity = returnCityInfo(_TEST_CITYNAME, _TEST_COUNTRYCODE);
+    let testCity = returnCityInfo(_TEST_CITYNAME, _TEST_COUNTRYCODE, true);
     console.log(testCity);
     let userInput, msgOutput;
 
@@ -118,7 +211,7 @@ function testCityDB() {
         };
 
         startTime = new Date();
-        testCity = returnCityInfo(userCity, userState);
+        testCity = returnCityInfo(userCity, userState, false);
         endTime = new Date();
         elapsedTime = (endTime.getMilliseconds() - startTime.getMilliseconds())
 
@@ -145,9 +238,9 @@ function testCityDB() {
 };
 
 /**
- * Runs when the user clicks the Get City Code button
+ * Runs when the user clicks the Get City Code button on the Test Page.
  */
-function runCitySearch() {
+function testCitySearch() {
     let userInput = $("#city-search").val();
     
     let commaPos = -1;
@@ -160,7 +253,7 @@ function runCitySearch() {
 
     if (commaPos > -1) {
         userCity = userInput.substring(0, commaPos).trim();
-        userCountry = userInput.substring(commaPos + 1).trim();
+        userCountry = returnCountryCode(userInput.substring(commaPos + 1).trim());
     } else {
         userCity = userInput.trim();
     }
@@ -168,6 +261,116 @@ function runCitySearch() {
     _queryStart = new Date();
     renderCity(userCity, userCountry);
 }
+
+/**
+ * Given a city and its expected country, displays the results to the test bed page.
+ * @param {*} findCity 
+ * @param {*} findCountry 
+ */
+function renderCity (findCity, findCountry) {
+    let textBox = $("#text-display");
+    let existingText = textBox.text() + "\n\n";
+    
+    let cityResult = returnCityInfo(findCity, findCountry, false);
+    let msgOutput = "Results of city code lookup:\n";
+    let queryEnd = new Date();
+    let queryLength = queryEnd.getTime() - _queryStart.getTime();
+
+    if (cityResult) {
+        msgOutput += cityResult.name + ", " + cityResult.country + " (" + cityResult.code + "). " +
+                    "LatLon: (" + cityResult.coords.lat + ", " + cityResult.coords.lon + "). " +
+                    "Time Zone: " + cityResult.timeZone + "\n" +
+                    "Search took " + queryLength + " milliseconds.";
+    } else {
+        let userInput = findCity;
+        if (findCountry) {
+            userInput += ", " + findCountry
+        }
+        msgOutput += "Couldn't find '" + userInput + "'!"
+    }
+    
+    textBox.text(existingText + msgOutput);
+    };
+
+
+
+/**
+ * Compares two strings and returns the percentage of similarity
+ * @param {Number} txt1 First string to compare
+ * @param {Number} txt2 Second string to compare
+ * Original algorithm copyright 2015 by Jonathan Andrews; open for use per MIT license.
+ */
+function textPercentMatch (txt1, txt2) {
+    let returnPercent = -1;
+
+    if (txt1 == txt2) {
+        returnPercent = 1;
+
+    } else {
+        let longString, shortString;
+
+        if (txt1.length >= txt2.length) {
+            longString = txt1;
+            shortString = txt2;
+        } else {
+            longString = txt2;
+            shortString = txt1;
+        };
+
+        let startPos = 0;
+        let charactersMatched = 0;
+        let endPosShort = shortString.length - 1;
+        let resultIncrement = 0.995 / (longString.length - countString(longString, " "));
+            
+        while (startPos <= endPosShort) {
+            let matchString = "";
+            let matchLength = 0;
+            let significantLength = 0;
+            
+            do {
+                matchLength++;
+                matchString = shortString.substr(startPos, matchLength);
+            } while ((startPos + matchLength <= endPosShort) && (longString.indexOf(matchString) > -1));
+            if (startPos + matchLength < endPosShort) {
+                matchLength--;
+            };
+            significantLength = matchLength - countString(matchString, " ");
+
+            if (significantLength > 1) {
+                charactersMatched += significantLength;
+                matchString = matchString.substr(0, matchLength);
+                longString = longString.replace(matchString, "");
+            };
+            if (matchLength > 1) {
+                startPos += matchLength;
+            } else {
+                startPos++;
+            };
+        };
+
+        returnPercent = charactersMatched * resultIncrement;
+    };
+
+    return returnPercent;
+};
+
+/**
+ * Counts the instances of given string inside another string
+ * @param {Text} baseText Text in which to search for the search string
+ * @param {Text} searchText Text for which to search
+ */
+function countString(baseText, searchText) {
+    let returnCount = 0;
+    let characterPos = 0;
+    let endPos = baseText.length - 1;
+    do {
+        characterPos = baseText.indexOf(searchText, characterPos + 1);
+        if (characterPos > 0) {
+            returnCount++;
+        };
+    } while ((characterPos > -1) && (characterPos < endPos));
+    return returnCount;
+};
 
 // _request.onload = function() {
 //     _citiesDB = _request.response;
@@ -194,3 +397,6 @@ function runCitySearch() {
 
 
 // testCityDB();
+
+// console.log(countString("Hello World!", "e"));
+// console.log(textPercentMatch("Mexico City, Mexico", "Mehico City, Mehico"));
