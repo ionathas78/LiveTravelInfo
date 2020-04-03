@@ -69,17 +69,34 @@
    
 
 
-    <div class="row">
-        <h2>5 Day forecast</h2>
-        <div class="callout" id="forecast">
-
-        </div>
+    
+    <h2>Weather</h2>
+    
         
-    </div>
+        <div class="grid-x">
+            
+                <div class="small-3 float-center">
+                    <button class="button small-3 larger-3" style="height: 12vh" onclick="runCurrentWeatherTest()">Get Current Weather</button>
+                </div>
+                <div class="small-3 float-center">
+                    <button class="button small-3 larger-3" style="height: 12vh" onclick="runWeatherForecastTest()">Get 5-day Forecast</button>
+                </div>
+                <div class="small-3 float-center">
+                    <button class="button small-3 larger-3" style="height: 12vh" onclick="runUVIndexTest()">Get UV Index</button>
+                </div>
+                <textarea class="float-center" id="text-display" style="height: 50vh; width: 50vw;"></textarea>
+            
+        </div>
+            
+            
+        
+        
+        
+   
 
     <div id="flightBtn">
         <a href="flights.html" class="button success float-center" style="width: 17%;"><strong>Find A Flight</strong></a>
-        </div>
+    </div>
 
     
     
@@ -95,6 +112,8 @@
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5v˜ZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="weather.js"></script>
+    <script src="iataDBase.js" type="text/javascript"></script>
+           
 
     
 </body>
