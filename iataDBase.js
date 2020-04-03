@@ -51,6 +51,13 @@ function runCitySearch() {
     window.location.href = "citySearch.html";
 }
 
+function populateCitySearchPage() {
+    let userDestination = JSON.parse(localStorage.getItem("travelDestination"));
+
+    console.log(userDestination);
+    $("#city-name").text(userDestination.name);
+}
+
 /**
  * Use with the NEW keyword to create a new instance of a CityData container object
  * @param {Text} cityName Name of city
