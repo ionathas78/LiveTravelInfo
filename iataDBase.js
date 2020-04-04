@@ -18,24 +18,24 @@ var _queryStart = new Date();
 /**
  * Runs when the user clicks the Search button on the Index page
  */
-function runCitySearch() {
-    let cityInput = $("#city-input").val();
-    let countryInput = $("#country-select").val();
-
+function searchCityAndCountry(cityName, countryName) {
     let commaPos = -1;
     let userCity = "";
     let userCountry = "";
 
-    if (cityInput) {
-        commaPos = cityInput.indexOf(",");
+    if (cityName) {
+        commaPos = cityName.indexOf(",");
     }
 
     if (commaPos > -1) {
-        userCity = cityInput.substring(0, commaPos).trim();
-        userCountry = returnCountryCode(cityInput.substring(commaPos + 1).trim());
+        userCity = cityName.substring(0, commaPos).trim();
+        let locatedCountry = returnCountryInfo(cityName.substring(commaPos + 1).trim());
+        if (locatedCountry) {
+            userCountry = locatedCountry.code;
+        };
     } else {
-        userCity = cityInput.trim();
-        userCountry = countryInput;
+        userCity = cityName.trim();
+        userCountry = countryName;
     }
 
     let cityPick = returnCityInfo(userCity, userCountry, true);
@@ -64,29 +64,22 @@ function runCitySearch() {
     window.location.href = "citySearch.html";
 }
 
-function populateCitySearchPage() {
-    let userDestination = JSON.parse(localStorage.getItem("travelDestination"));
-
-    finalDestination = userDestination[userDestination.length - 1];
-    console.log(finalDestination);
-    $("#city-name").text(finalDestination.name);
-}
-
 /**
  * Use with the NEW keyword to create a new instance of a CityData container object
  * @param {Text} cityName Name of city
- * @param {Text} countryName Name of country in which the city resides
+ * @param {Text} countryCode Code of country in which the city resides
  * @param {Text} cityCode IATA city code
  * @param {Number} cityLatitude Latitude of city's coordinates
  * @param {Number} cityLongitude Longitude of city's coordinates
  * @param {Text} cityTimeZone Time Zone in which the city falls
  */
-function CityData(cityName, countryName, cityCode, cityLatitude, cityLongitude, cityTimeZone) {
+function CityData(cityName, countryCode, cityCode, countryCurrency, cityLatitude, cityLongitude, cityTimeZone) {
     return {
         name: cityName,
         state: "",
-        country: countryName,
+        country: countryCode,
         code: cityCode,
+        currency: countryCurrency,
         coords: {
             lat: cityLatitude,
             lon: cityLongitude
@@ -110,7 +103,7 @@ function returnCityInfo(cityName, countryCode, doIgnoreCountryToMatch) {
 
     for (var city of citiesData) {
         if ((city.name == cityName) && ((city.country_code == countryCode) || (countryCode == ""))) {
-            returnObject = new CityData(city.name, city.country_code, city.code, city.coordinates.lat, city.coordinates.lon, city.time_zone);
+            returnObject = new CityData(city.name, city.country_code, city.code, "" ,city.coordinates.lat, city.coordinates.lon, city.time_zone);
             break;
         };
     };
@@ -130,56 +123,72 @@ function returnCityInfo(cityName, countryCode, doIgnoreCountryToMatch) {
         };
 
         if (matchPercent >= _FUZZYMATCH_THRESHOLD) {
-            returnObject = new CityData(matchCity.name, matchCity.country_code, matchCity.code, matchCity.coordinates.lat, matchCity.coordinates.lon, matchCity.time_zone);
+            returnObject = new CityData(matchCity.name, matchCity.country_code, matchCity.code, "", matchCity.coordinates.lat, matchCity.coordinates.lon, matchCity.time_zone);
         };
     };
 
     if (!returnObject && doIgnoreCountryToMatch && (countryCode != "")) {
         returnObject = returnCityInfo(cityName, "", false);           
-    }
+    };
+
+    if (returnObject) {
+        let countryCurrency = returnCountryInfo(returnObject.countryCode);
+        returnObject.currency = countryCurrency;
+    };
 
     // let endTime = Date.now();
     // console.log("Lookup operation took " + (endTime - startTime) + " seconds.");
     return returnObject;
 };
 
-function returnCountryCode (countryName) {
-    let returnString = "";
+function returnCountryInfo (countryName) {
+    let returnObject = {name: "", code: "", currency: ""};
 
     for (var country of countriesData) {
         if (country.name == countryName) {
-            returnString = country.code;
+            returnObject.name = country.name;
+            returnObject.code = country.code;
+            returnObject.currency = country.currencyCode;
             break;
         };
     };
 
-    if (returnString == "") {
+    if (returnObject.code == "") {
         for (var country of countriesData) {
             if (country.code == countryName) {
-                returnString = countryName;
+                returnObject.name = country.name;
+                returnObject.code = country.code;
+                returnObject.currency = country.currencyCode;
                 break;
             };
         };
     };
 
-    if (returnString == "") {
+    if (returnObject.code == "") {
+        let matchName = "";
         let matchCode = "";
+        let matchCurrency = "";
         let matchPercent = 0;
 
         for (var country of countriesData) {
             let testPercent = textPercentMatch(countryName, country.name);
             if (testPercent > matchPercent) {
                 matchPercent = testPercent;
+
+                matchName = country.name;
                 matchCode = country.code;
+                matchCurrency = country.currencyCode;
             };
         };
 
         if (matchPercent >= _FUZZYMATCH_THRESHOLD) {
-            returnString = matchCode;
+            returnObject.name = matchName;
+            returnObject.code = matchCode;
+            returnObject.currency = matchCurrency;
         }
     };
 
-    return returnString;
+    return returnObject;
 };
 
 
@@ -253,7 +262,10 @@ function testCitySearch() {
 
     if (commaPos > -1) {
         userCity = userInput.substring(0, commaPos).trim();
-        userCountry = returnCountryCode(userInput.substring(commaPos + 1).trim());
+        let locatedCountry = returnCountryInfo(userInput.substring(commaPos + 1).trim());
+        if (locatedCountry) {
+            userCountry = locatedCountry.code;
+        };
     } else {
         userCity = userInput.trim();
     }
@@ -306,6 +318,9 @@ function textPercentMatch (txt1, txt2) {
     if (txt1 == txt2) {
         returnPercent = 1;
 
+    } else if ((!txt1) || (!txt2)) {
+        returnPercent = (txt1 === txt2);
+        
     } else {
         let longString, shortString;
 

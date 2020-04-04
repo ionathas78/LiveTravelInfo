@@ -42,7 +42,7 @@ var _currentWeather, _weatherForecast, _uvIndex, _currentPlace;
 /**
  * Run when the user clicks the 'Get Current Weather' button
  */
-function runCurrentWeatherTest() {
+function testCurrentWeather() {
     let userInput = $("#weather-search").val();
 
     _queryStart = new Date();
@@ -52,7 +52,7 @@ function runCurrentWeatherTest() {
 /**
  * Run when the user clicks the 'Get 5-day forecast' button
  */
-function runWeatherForecastTest() {
+function testWeatherForecast() {
     let userInput = $("#weather-search").val();
 
     _queryStart = new Date();
@@ -62,7 +62,7 @@ function runWeatherForecastTest() {
 /**
  * Run when the user clicks the 'Get UV Index' button
  */
-function runUVIndexTest() {
+function testUVIndex() {
     let userInput = $("#weather-search").val();
 
     _queryStart = new Date();

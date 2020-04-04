@@ -18,6 +18,34 @@ var _queryStart = new Date();
 
 //  **  Functions
 
+function runTicketQuery(originCity, destinationCity) {
+    sendAjax_CORS_Airline(makeAirlineQueryString(originCity, destinationCity));
+
+}
+
+/**
+ * Send specified Ajax query
+ * @param {*} queryString Full API Call, including http(s)://
+ */
+function sendAjax_CORS_Airline(queryString) {
+    queryString = _CORS_SERVER + queryString;
+    // console.log(queryString);
+
+    $.ajax({
+        method: "GET",
+        url: queryString,
+        headers: {"X-Access-Token": _AIRLINE_TOKEN}
+    }).then(function (response) {
+        _response = response;
+
+        // renderTicketResults(response);
+
+        console.log(response);
+    });
+};
+
+
+
 /**
  * Construct the API query string for the cheapest ticket search
  * @param {*} originCode IATA code for the origin city (or blank for Austin)
@@ -36,11 +64,11 @@ function makeAirlineQueryString(originCode, destinationCode, departDate, returnD
     var departSpec = "";
     var returnSpec = "";
 
-    var originCity = _userCityCode;
+    var originCity = "";
 
     if (!((originCode == "") || (originCode == null))) {
         originCity = originCode;
-    } else if (((!originCity) || (originCity == ""))) {
+    } else {
         originCity = _AUSTIN_IATACODE;
     };
 
@@ -80,7 +108,7 @@ function makeAirlineQueryString(originCode, destinationCode, departDate, returnD
  * Send specified Ajax query
  * @param {*} queryString Full API Call, including http(s)://
  */
-function sendAjax_CORS_Airline(queryString) {
+function sendAjax_CORS_AirlineTest(queryString) {
     queryString = _CORS_SERVER + queryString;
     // console.log(queryString);
 
@@ -91,27 +119,27 @@ function sendAjax_CORS_Airline(queryString) {
     }).then(function (response) {
         _response = response;
 
-        renderTickets(response);
+        renderTicketTest(response);
 
         console.log(response);
     });
 };
 
 /**
- * Called when the user presses the 'Get Tickets' button
+ * Called when the user presses the 'Get Tickets' button on the Test Page
  */
-function runTicketTest() {
+function testTicketQuery() {
     let userInput = $("#test-tickets").val();
 
     _queryStart = new Date();
-    sendAjax_CORS_Airline(makeAirlineQueryString("", userInput));
+    sendAjax_CORS_AirlineTest(makeAirlineQueryString("", userInput));
 };
 
 /**
- * Displays the ticket results on the screen
+ * Displays the ticket results on the test page
  * @param {Object} response API response package
  */
-function renderTickets(response) {
+function renderTicketTest(response) {
     let textBox = $("#text-display");
     let existingText = textBox.text() + "\n\n";
     let resultArray = response.data;
@@ -164,7 +192,7 @@ function returnTripClass(classCode) {
 
 //  **  Logic
 
-// sendAjax_CORS_Airline(makeAirlineQueryString("", "MEX"));
+// sendAjax_CORS_AirlineTest(makeAirlineQueryString("", "MEX"));
 
 
 
