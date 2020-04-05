@@ -59,14 +59,14 @@
         </div>
         
     </div>
-    <div class="cell small-8" style="margin-top: 4%;">
-        <div class="callout">
+    <div class="cell small-6" style="margin-top: 4%;">
+        <div class="callout small-8">
             <div  id="liveVideo">
                 <label>Select Camera
                     <select id="select-cam">
                         <!-- Cam Feed list goes here -->
                     </select>
-                    <button onclick="showCam()">Get Live Feed</button>
+                    <button class="button" onclick="showCam()">Get Live Feed</button>
                 </label>
                 <br>
                 <iframe id="cam-feed" width="300px">
@@ -87,16 +87,16 @@
         
         <div class="grid-x">
             
-                <div class="small-3 float-center">
-                    <button class="button small-3 larger-3" style="height: 12vh" onclick="runCurrentWeather()">Get Current Weather</button>
+                <div class="small-3 float-left">
+                    <button class="button small-3 larger-3" style="height: 10vh" onclick="runCurrentWeather()">Get Current Weather</button>
                 </div>
-                <div class="small-3 float-center">
-                    <button class="button small-3 larger-3" style="height: 12vh" onclick="runWeatherForecast()">Get 5-day Forecast</button>
+                <div class="float-left">
+                    <button class="button secondary small-3 larger-3" style="height: 10vh" onclick="runWeatherForecast()">Get 5-day Forecast</button>
                     <div class="small-3 float-center">
                     </div>
-                    <button class="button small-3 larger-3" style="height: 12vh" onclick="runUVIndex()">Get UV Index</button>
+                    <button class="button alert small-3 larger-3" style="height: 10vh" onclick="runUVIndex()">Get UV Index</button>
                 </div>
-                <textarea class="float-center" id="text-display" style="height: 50vh; width: 50vw;"></textarea>
+                <textarea class="float-left small-12" id="text-display" style="height: 50vh; width: 50vw;"></textarea>
             
         </div>
             
