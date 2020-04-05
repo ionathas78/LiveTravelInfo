@@ -30,15 +30,15 @@
             <div class="callout" id="departure" style="background-color: #f8f8f8;">
                 <div  >
                     <label><strong>Departure City</strong></label>
-                    <input type="text" id="test-tickets" placeholder="Destination City Code">
-                    <button class="button" onclick="runTicketTest()">Get Tickets</button>
+                    <input type="text" id="destination-city" placeholder="Destination City Code">
+                    <button class="button" onclick="runTicketQuery()">Get Ticket Prices</button>
                 </div>
             </div>
             <div class="callout" id="arrival" style="background-color: #f8f8f8">
                 <div > 
-                    <label><strong>Get City Code</strong></label>
-                    <input type="text" id="city-search" placeholder="City Name">
-                    <button class="button" onclick="runCitySearch()">Get City Code</button>
+                    <label><strong>Origin City</strong></label>
+                    <input type="text" id="source-city" placeholder="Origin City Code">
+                    <!-- <button class="button" onclick="runCitySearch()">Get City Code</button> -->
                 </div>
             </div>
             
@@ -55,8 +55,9 @@
     <script src="Foundation-6.6.1-CSS-project/assets/js/app.js.map"></script>
     <script src="js/vendor/foundation.min.js"></script>
     <script src="iataDBase.js" type="text/javascript"></script>
-    <script src="cors-anywhere.js"></script>
     <script src="whereAmI.js"></script>
     <script src="airlineTickets.js"></script>
+    <script src="script.js"></script>
+    <script type="text/javascript">populateFlightsPage()</script>
 </body>
 </html>

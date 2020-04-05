@@ -15,6 +15,36 @@ var _userCityCode = "";
 
 //  **  Functions
 
+function runWhereAmI () {
+    sendAjaxQuery_WhereAmI(makeWhereAmIQueryString());
+}
+
+/**
+ * Send specified Ajax query
+ * @param {Text} queryString Full API Call, including http(s)://
+ */
+function sendAjaxQuery_WhereAmI(queryString) {
+    console.log(queryString);
+
+    $.ajax({
+        method: "GET",
+        url: queryString
+    }).then(function (response) {
+        _response = response;
+        renderWhereIAm(response);
+    });
+};
+
+function renderWhereIAm(response) {
+    let textBox = $("#source-city");
+
+    let resultCityCode = response.iata;
+    // let resultCityName = response.name;
+    // let resultCountryName = response.country_name;
+    
+    textBox.val(resultCityCode);
+};
+
 /**
  * Construct the API query string for the cheapest ticket search
  * @param {*} originCode IATA code for the origin city (or blank for Austin)
@@ -65,7 +95,7 @@ function makeWhereAmIQueryString(localeCode, callbackName, ipAddress) {
  * @param {Text} queryString Full API Call, including http(s)://
  * @param {Boolean} doRender Render results to page?
  */
-function sendAjax(queryString, doRender) {
+function sendAjaxTest(queryString, doRender) {
     console.log(queryString);
 
     $.ajax({
@@ -76,18 +106,20 @@ function sendAjax(queryString, doRender) {
         _userCityCode = response.iata;
         console.log(response);
         if (doRender) {
-            renderWhereIAm(response);
+            renderWhereIAmTest(response);
         };
     });
 };
 
+
+
 /**
- * Runs when the user presses the Where Am I? button
+ * Runs when the user presses the Where Am I? button on the Test page
  */
-function runWhereAmI() {
+function testWhereAmI() {
 
     _startTime = Date.now();
-    sendAjax(makeWhereAmIQueryString(), true);
+    sendAjaxTest(makeWhereAmIQueryString(), true);
 };
 
 /**
@@ -95,14 +127,14 @@ function runWhereAmI() {
  * results to screen.
  */
 function getWhereAmI() {
-    sendAjax(makeWhereAmIQueryString(), false);
+    sendAjaxTest(makeWhereAmIQueryString(), false);
 };
 
 /**
  * Displays result to the screen.
  * @param {*} response API response
  */
-function renderWhereIAm (response) {
+function renderWhereIAmTest (response) {
     let textBox = $("#text-display");
     let existingText = textBox.text() + "\n\n";
 

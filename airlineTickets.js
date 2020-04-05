@@ -18,9 +18,8 @@ var _queryStart = new Date();
 
 //  **  Functions
 
-function runTicketQuery(originCity, destinationCity) {
+function ticketQueryByOriginAndDestination(originCity, destinationCity) {
     sendAjax_CORS_Airline(makeAirlineQueryString(originCity, destinationCity));
-
 }
 
 /**
@@ -38,13 +37,37 @@ function sendAjax_CORS_Airline(queryString) {
     }).then(function (response) {
         _response = response;
 
-        // renderTicketResults(response);
+        renderTicketResults(response);
 
-        console.log(response);
+        // console.log(response);
     });
 };
 
+function renderTicketResults (response) {
+    let textBox = $("#text-display");
+    let existingText = textBox.text() + "\n\n";
+    let resultArray = response.data;
+    let msgResponse = "Ticket Price fetch:\n";
 
+    for (var i = 0; i < resultArray.length; i++) {
+        let resultOrigin = resultArray[i].origin;
+        let resultDestination = resultArray[i].destination;
+        let resultDepart = resultArray[i].depart_date;
+        let resultPrice = resultArray[i].value;
+        let resultClass = returnTripClass(resultArray[i].trip_class);
+
+        let msgLine = i + ": " + resultOrigin + " to " + resultDestination + "(depart " + resultDepart + "): $" +
+                    resultPrice + ", " + resultClass + " class.";
+
+        msgResponse += msgLine + "\n";
+    };
+    if (resultArray.length < 1) {
+        msgResponse += "No tickets found!";
+    }
+
+    textBox.text(existingText + msgResponse);
+
+};
 
 /**
  * Construct the API query string for the cheapest ticket search
