@@ -1,3 +1,4 @@
+//  **  Functions
 
 /**
  * Runs when the user clicks the Search button on the Index page
@@ -84,6 +85,9 @@ function populateCitySearchPage() {
     getNearbyWebcams(destinationLatitude, destinationLongitude, maximumDistance);
 };
 
+/**
+ * Runs when the Flights page loads
+ */
 function populateFlightsPage () {
     runWhereAmI();
 

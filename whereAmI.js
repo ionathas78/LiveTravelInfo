@@ -2,19 +2,22 @@
 
 const _WHEREIS_APIBASE = "http://www.travelpayouts.com/whereami";
 
-const _WHEREIS_LOCALE = "locale=%LOCALE%";            //  Where %LOCALE% is the locale code (i.e., 'en')
+const _WHEREIS_LOCALE = "locale=%LOCALE%";              //  Where %LOCALE% is the locale code (i.e., 'en')
 const _WHEREIS_CALLBACK = "callback=%NAME%";            //  Where %NAME% is the name for the response object (e.g., 'useriata')
 const _WHEREIS_IPADDRESS = "ip=%ADDRESS%";              //  Where %ADDRESS% is the user's IP address
 
 const _US_LOCALE = "en";
 const _CALLBACK_NAME = "useriata";
 
-var _startTime = Date.now();
+var _startTime = Date.now();                            //  For test purposes only
+var _userCityCode = "";                                 //      ibid.
 var _response;
-var _userCityCode = "";
 
 //  **  Functions
 
+/**
+ * Runs when the Flights page loads
+ */
 function runWhereAmI () {
     sendAjaxQuery_WhereAmI(makeWhereAmIQueryString());
 }
@@ -35,13 +38,13 @@ function sendAjaxQuery_WhereAmI(queryString) {
     });
 };
 
+/**
+ * Display results to Flights page
+ * @param {Object} response API response to WhereAmI query
+ */
 function renderWhereIAm(response) {
     let textBox = $("#source-city");
-
     let resultCityCode = response.iata;
-    // let resultCityName = response.name;
-    // let resultCountryName = response.country_name;
-    
     textBox.val(resultCityCode);
 };
 
@@ -76,10 +79,6 @@ function makeWhereAmIQueryString(localeCode, callbackName, ipAddress) {
         ipString = _WHEREIS_IPADDRESS.replace("%ADDRESS%", ipAddress);
     }
     
-    // returnString = baseString + "?" +
-    //             localeString + "&" +
-    //             callbackString;
-    
     returnString = baseString + "?" +
                 localeString;
 
@@ -89,6 +88,8 @@ function makeWhereAmIQueryString(localeCode, callbackName, ipAddress) {
 
     return returnString;
 };
+
+//  **      Test Functions
 
 /**
  * Send specified Ajax query
@@ -110,8 +111,6 @@ function sendAjaxTest(queryString, doRender) {
         };
     });
 };
-
-
 
 /**
  * Runs when the user presses the Where Am I? button on the Test page
@@ -174,10 +173,6 @@ function renderWhereIAmTest (response) {
 
 
 //  **  Logic
-
-// sendAjax(makeWhereAmIQueryString());
-
-getWhereAmI();
 
 
 

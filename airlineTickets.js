@@ -2,29 +2,34 @@
 
 const _CORS_SERVER = "https://polar-bayou-73801.herokuapp.com/";
 const _AIRLINE_APIBASE = "http://api.travelpayouts.com/v2";
-const _AIRLINE_APILATEST = "/prices/latest";          //  Needs '?' after
+const _AIRLINE_APILATEST = "/prices/latest";                //  Needs '?' after
 const _AIRLINE_CURRENCY = "currency=%CURRENCY%";            //  Where %CURRENCY% is the currency code
-const _AIRLINE_ORIGIN = "origin=%CITY%";                   //  Where %CITY% is the city code
-const _AIRLINE_DESTINATION = "destination=%CITY%";         //  Where %CITY% is the city code
-const _AIRLINE_DEPART = "depart_date=%YEAR%-%MONTH%";     //  Where %YEAR% is the year and %MONTH% is the month
-const _AIRLINE_RETURN = "return_date=%YEAR%-%MONTH%";     //  Where %YEAR% is the year and %MONTH% is the month
+const _AIRLINE_ORIGIN = "origin=%CITY%";                    //  Where %CITY% is the city code
+const _AIRLINE_DESTINATION = "destination=%CITY%";          //  Where %CITY% is the city code
+const _AIRLINE_DEPART = "depart_date=%YEAR%-%MONTH%";       //  Where %YEAR% is the year and %MONTH% is the month
+const _AIRLINE_RETURN = "return_date=%YEAR%-%MONTH%";       //  Where %YEAR% is the year and %MONTH% is the month
 const _AIRLINE_APIKEY = "token=%TOKEN%";                    //  Where %TOKEN% is the user's token
 const _AIRLINE_TOKEN = "83fa8527d64346234a08793dc2258fe5";
 const _AUSTIN_IATACODE = "AUS";
 const _USDOLLAR_CURRENCYCODE = "USD";
 
 var _response;
-var _queryStart = new Date();
+var _queryStart = new Date();                               //  For test purposes only
 
 //  **  Functions
 
+/**
+ * Get ticket results for Flights page
+ * @param {Text} originCity City Code for departure city
+ * @param {Text} destinationCity City Code for arrival city
+ */
 function ticketQueryByOriginAndDestination(originCity, destinationCity) {
     sendAjax_CORS_Airline(makeAirlineQueryString(originCity, destinationCity));
 }
 
 /**
  * Send specified Ajax query
- * @param {*} queryString Full API Call, including http(s)://
+ * @param {Text} queryString Full API Call, including http(s)://
  */
 function sendAjax_CORS_Airline(queryString) {
     queryString = _CORS_SERVER + queryString;
@@ -43,6 +48,10 @@ function sendAjax_CORS_Airline(queryString) {
     });
 };
 
+/**
+ * Display results to Flights page
+ * @param {Object} response API response to ticket query
+ */
 function renderTicketResults (response) {
     let textBox = $("#text-display");
     let existingText = textBox.text() + "\n\n";
@@ -53,11 +62,23 @@ function renderTicketResults (response) {
         let resultOrigin = resultArray[i].origin;
         let resultDestination = resultArray[i].destination;
         let resultDepart = resultArray[i].depart_date;
+        let resultReturn = resultArray[i].return_date;
         let resultPrice = resultArray[i].value;
         let resultClass = returnTripClass(resultArray[i].trip_class);
 
-        let msgLine = i + ": " + resultOrigin + " to " + resultDestination + "(depart " + resultDepart + "): $" +
-                    resultPrice + ", " + resultClass + " class.";
+        let msgLine = i + ": " + resultOrigin + " to " + resultDestination;
+        
+        if (!((resultDepart == "0001-01-01") || (resultDepart == ""))) {                 //  Placeholder value
+            msgLine += " (depart " + resultDepart;
+
+            if (!((resultReturn == "0001-01-01") || (resultReturn == ""))) {
+                msgLine += ", return " + resultReturn;
+            }
+
+            msgLine += ")";
+        };
+
+        msgLine += ": $" + resultPrice + ", " + resultClass + " class.";
 
         msgResponse += msgLine + "\n";
     };
@@ -71,10 +92,10 @@ function renderTicketResults (response) {
 
 /**
  * Construct the API query string for the cheapest ticket search
- * @param {*} originCode IATA code for the origin city (or blank for Austin)
- * @param {*} destinationCode IATA code for the destination city
- * @param {*} departDate Date to schedule departure
- * @param {*} returnDate Date to schedule return
+ * @param {Text} originCode IATA code for the origin city (or blank for Austin)
+ * @param {Text} destinationCode IATA code for the destination city
+ * @param {Date} departDate Date to schedule departure
+ * @param {Date} returnDate Date to schedule return
  */
 function makeAirlineQueryString(originCode, destinationCode, departDate, returnDate) {
     var returnString = "";
@@ -127,9 +148,11 @@ function makeAirlineQueryString(originCode, destinationCode, departDate, returnD
     return returnString;
 };
 
+//  **  Test Functions
+
 /**
  * Send specified Ajax query
- * @param {*} queryString Full API Call, including http(s)://
+ * @param {Text} queryString Full API Call, including http(s)://
  */
 function sendAjax_CORS_AirlineTest(queryString) {
     queryString = _CORS_SERVER + queryString;
@@ -174,11 +197,21 @@ function renderTicketTest(response) {
         let resultOrigin = resultArray[i].origin;
         let resultDestination = resultArray[i].destination;
         let resultDepart = resultArray[i].depart_date;
+        let resultReturn = resultArray[i].return_date;
         let resultPrice = resultArray[i].value;
         let resultClass = returnTripClass(resultArray[i].trip_class);
 
-        let msgLine = i + ": " + resultOrigin + " to " + resultDestination + "(depart " + resultDepart + "): $" +
-                    resultPrice + ", " + resultClass + " class.";
+        let msgLine = i + ": " + resultOrigin + " to " + resultDestination;
+        
+        if (!((resultDepart == "0001-01-01") || (resultDepart == ""))) {                 //  Placeholder value
+            msgLine += " (depart " + resultDepart + ")";
+
+            if (!((resultReturn == "0001-01-01") || (resultReturn == ""))) {
+                msg += " (return " + resultReturn + ")";
+            }
+        };
+
+        msgLine += ": $" + resultPrice + ", " + resultClass + " class.";
 
         msgResponse += msgLine + "\n";
     };
@@ -189,6 +222,8 @@ function renderTicketTest(response) {
 
     textBox.text(existingText + msgResponse);
 };
+
+//  **      Utility Functions
 
 /**
  * Given the TravelPayouts API Ticket Class code, returns the name of the class
@@ -215,7 +250,6 @@ function returnTripClass(classCode) {
 
 //  **  Logic
 
-// sendAjax_CORS_AirlineTest(makeAirlineQueryString("", "MEX"));
 
 
 
