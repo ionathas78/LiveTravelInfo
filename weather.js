@@ -1,14 +1,11 @@
 //  **  Declarations
 
-//  This is a Heroku server I launched running Rob Wu's excellent cors-anywhere code from 
-//  https://github.com/Rob--W/cors-anywhere. It was for the static map API, so I didn't wind up using it, 
-//  but it wasn't because the CORS headers weren't working.
-// const _CORS_SERVER = "https://polar-bayou-73801.herokuapp.com/";
-
+//  The _QTYPE group serves to identify the type of query inside the fetch and show functions
 const _QTYPE_CURRENT_WEATHER = 1;
 const _QTYPE_FORECAST_WEATHER = 2;
 const _QTYPE_UVINDEX = 3;
-const _QTYPE_PLACE = 4;
+const _QTYPE_INLINE_UVINDEX = 4;
+const _QTYPE_PLACE = 5;                         //  For testing purposes only
 
 //  OpenWeather API
 const _OPENWEATHER_BASE = "https://api.openweathermap.org/data/2.5";           
@@ -34,26 +31,45 @@ const _MAPQUEST_LATLON = "?location=%LAT%,%LON%";                             //
 const _MAPQUEST_CITYSTATE = "?location=%CITY%,%STATE%";                         //  where %CITY% is the city name and %STATE% is the state.
 const _MAPQUEST_APIKEY = "&key=s57L9cRQk0CZGiyqnipytbVrVQw9j2Dn";               //  API Key
 
-var _queryStart = new Date();
+var _queryStart = new Date();                                                   //  For testing purposes only
 var _currentWeather, _weatherForecast, _uvIndex, _currentPlace;
 
 //  **  Functions
 
 /**
  * Run when the user clicks the 'Get Current Weather' button on the citySearch page
+ * @param {Number} targetLatitude Latitude of target point
+ * @param {Number} targetLongitude Longitude of target point
  */
 function currentWeatherByLatLon(targetLatitude, targetLongitude) {
+    queryWeather(targetLatitude, targetLongitude, _QTYPE_INLINE_UVINDEX);           //  Also run a non-displayed UV search
     queryWeather(targetLatitude, targetLongitude, _QTYPE_CURRENT_WEATHER);
 };
 
+/**
+ * Run when the user clicks the 'Get Forecast' button on the CitySearch page
+ * @param {Number} targetLatitude Latitude of target point
+ * @param {Number} targetLongitude Longitude of target point
+ */
 function weatherForecastByLatLon(targetLatitude, targetLongitude) {
     queryWeather(targetLatitude, targetLongitude, _QTYPE_FORECAST_WEATHER);
 };
 
+/**
+ * Run when the user clicks the 'Get UV Index' button on the CitySearch page
+ * @param {Number} targetLatitude Latitude of target point
+ * @param {Number} targetLongitude Longitude of target point
+ */
 function uvIndexByLatLon(targetLatitude, targetLongitude) {
     queryWeather(targetLatitude, targetLongitude, _QTYPE_UVINDEX);
 };
 
+/**
+ * Run the API query
+ * @param {Number} targetLatitude Latitude of target point
+ * @param {Number} targetLongitude Longitude of target point
+ * @param {*} queryType _QTYPE enumeration designating the type of API call
+ */
 function queryWeather(targetLatitude, targetLongitude, queryType) {
     var apiCall = "";
     var apiKey = _OPENWEATHER_APIKEY;
@@ -69,6 +85,10 @@ function queryWeather(targetLatitude, targetLongitude, queryType) {
         case _QTYPE_UVINDEX:
             apiCall = _OPENWEATHER_UV_APICALL;
             break;
+        case _QTYPE_INLINE_UVINDEX:
+            _uvIndex = -1;                          //  So we'll know if we don't get the result back in time.
+            apiCall = _OPENWEATHER_UV_APICALL;
+            break;
         default:
     };
 
@@ -82,7 +102,7 @@ function queryWeather(targetLatitude, targetLongitude, queryType) {
 /**
  * Execute API call
  * @param {Text} queryString URL to query
- * @param {Number} queryType 1 - Current Weather, 2 - 5-Day Forecast
+ * @param {Number} queryType 1 - Current Weather, 2 - 5-Day Forecast...
  */
 function runAjaxQuery_Weather(queryString, queryType) {
     $.ajax({
@@ -98,7 +118,7 @@ function runAjaxQuery_Weather(queryString, queryType) {
                 _weatherForecast = response;
                 break;
 
-            case _QTYPE_UVINDEX:
+            case _QTYPE_UVINDEX, _QTYPE_INLINE_UVINDEX:
                 _uvIndex = response;
                 break;
             
@@ -113,6 +133,10 @@ function runAjaxQuery_Weather(queryString, queryType) {
  * @param {Number} queryType 1 - Current Weather, 2 - 5-day Forecast, 3 - UV Index
  */
 function renderResult (queryType) {
+    if (queryType == _QTYPE_INLINE_UVINDEX) {
+        return;                         //  This one isn't displayed onscreen.
+    }
+
     let textBox = $("#text-display");
     let existingText = textBox.text() + "\n\n";
     
@@ -131,6 +155,11 @@ function renderResult (queryType) {
             msgOutput += cityName + " - Current Weather Conditions:\n" +
                 weatherDescription + "; Temp: " + weatherTemperature + "\xB0F; Rel. Humidity: " + weatherHumidity + "%; " +
                 "Wind Speed: " + weatherWindSpeed + "mph."    
+
+            if (_uvIndex > -1) {
+                msgOutput += " UV Index: " + _uvIndex + ".";
+            };
+
             break;
 
         case _QTYPE_FORECAST_WEATHER:
@@ -172,6 +201,9 @@ function renderResult (queryType) {
     
     textBox.text(existingText + msgOutput);
 };
+
+
+//  **      Test Functions
 
 /**
  * Run when the user clicks the 'Get Current Weather' button on the test page
@@ -221,15 +253,15 @@ function testUVIndex() {
     };
 };
 
-/**
- * Run OpenWeather API Query for current and 5-day forecast
- * @param {Text} searchTerm Specific Search Term to query in call
- */
-function queryOpenweather(searchTerm) {
+// /**
+//  * Run OpenWeather API Query for current and 5-day forecast
+//  * @param {Text} searchTerm Specific Search Term to query in call
+//  */
+// function queryOpenweather(searchTerm) {
 
-    queryWeatherTest(searchTerm, _QTYPE_CURRENT_WEATHER);
-    queryWeatherTest(searchTerm, _QTYPE_FORECAST_WEATHER);
-};
+//     queryWeatherTest(searchTerm, _QTYPE_CURRENT_WEATHER);
+//     queryWeatherTest(searchTerm, _QTYPE_FORECAST_WEATHER);
+// };
 
 /**
  * Given Search Term and the base API call, parses term into search query and execute search
@@ -339,8 +371,6 @@ function queryUVIndex(latitudeValue, longitudeValue) {
     runAjaxQuery_WeatherTest(queryString, _QTYPE_UVINDEX);
 }
 
-
-
 /**
  * Execute API call
  * @param {Text} queryString URL to query
@@ -353,7 +383,6 @@ function runAjaxQuery_WeatherTest(queryString, queryType) {
     }).then(function(response) {
         switch (queryType) {
             case _QTYPE_CURRENT_WEATHER:
-                // _currentWeather.push(response);
                 _currentWeather = response;
 
                 queryPlaceByLatLon(response);
@@ -363,65 +392,22 @@ function runAjaxQuery_WeatherTest(queryString, queryType) {
                 break;
 
             case _QTYPE_FORECAST_WEATHER:
-                // _forecastWeather.push(response);
                 _forecastWeather = response;
 
                 renderFiveDayTest();
                 break;
 
             case _QTYPE_UVINDEX:
-                // _uvIndex.push(response);
                 _uvIndex = response;
 
                 renderUVIndexTest(response);
                 break;
 
             case _QTYPE_PLACE:
-                // let cityName = response.results[0].locations[0].adminArea5;
-                // let stateName = response.results[0].locations[0].adminArea3;
-                // let countryName = response.results[0].locations[0].adminArea1;
-                // let regionName = "";
-                // let latitude = response.results[0].locations[0].latLng.lat;
-                // let longitude = response.results[0].locations[0].latLng.lng;
-                // let msgResponse = "";
-
-                // if (countryName == "US") {
-                //     msgResponse = cityName + ", " + stateName;                    
-                //     regionName = stateName;
-                // } else {
-                //     msgResponse = cityName + ", " + countryName;
-                //     regionName = countryName;
-                // }
-
                 _currentPlace = response;
                 var responseLat = response.results[0].locations[0].latLng.lat;
                 var responseLon = response.results[0].locations[0].latLng.lng;
                 queryUVIndex(responseLat, responseLon);
-                
-                //  Add this to the Search Dropdown
-
-                // _cityName = msgResponse
-                // $("#city-name").text(_cityName);
-                // $("#current-date").text(_currentDate);
-
-                // var searchDropdown = $("#search-dropdown");
-                // if (searchDropdown.children("#dropdown-" + cityName).length < 1) {
-                //     searchDropdown.append($('<a id="dropdown-' + cityName + '" class="dropdown-item" href="#">' + _cityName + '</a>'));
-                // }
-
-                // let historyItem = new CityHistory(_searchIndex, cityName, regionName, latitude, longitude);
-                
-                // if (!cityHistoryContains(cityName, regionName)) {
-                //     _cityHistory.push(historyItem);
-                // }
-                // if (_cityHistory.length > 5) {
-                //     _cityHistory.shift();
-                // }
-
-                // renderHistoryTest(historyItem);
-
-                // queryMap(cityName, regionName);
-
                 break;
             
             default:
@@ -447,11 +433,6 @@ function renderCurrentTest() {
     let weatherTemperature = kelvinToFahrenheit(_currentWeather.main.temp).toFixed(1);
     let weatherHumidity = _currentWeather.main.humidity;
     let weatherWindSpeed = metersPerSecondToMilesPerHour(_currentWeather.wind.speed).toFixed(1);
-    // let backgroundImage = getWeatherIconURL(_currentWeather.weather[0].icon);
-    // let imageSize = "33%";
-    // let styleCSS = "background-image: url(" + backgroundImage + "); " +
-    //             "background-position: right; background-repeat: no-repeat;" +
-    //             "background-size: " + imageSize + ";";
 
     msgOutput += cityName + " (" + cityCode + ") Current Weather Conditions:\n" +
                 weatherDescription + "; Temp: " + weatherTemperature + "\xB0F; Rel. Humidity: " + weatherHumidity + "%; " +
@@ -519,28 +500,6 @@ function renderUVIndexTest(response) {
 };
 
 /**
- * Given an index, returns the name of the day of the week.
- * @param {Number} index Nonnegative whole number of day number to return
- */
-function dayOfWeek(index) {
-    if (index > 6) {
-        index %= 7;
-    };
-
-    const weekdays = [
-        "Sunday",
-        "Monday", 
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday"
-    ]
-
-    return weekdays[index];
-};
-
-/**
  * Commit results to screen
  * @param {Number} queryType 1 - Current Weather, 2 - 5-Day Forecast
  */
@@ -603,6 +562,29 @@ function renderHistoryTest() {
 
 }
 
+//  **      Utility Functions
+
+/**
+ * Given an index, returns the name of the day of the week.
+ * @param {Number} index Nonnegative whole number of day number to return
+ */
+function dayOfWeek(index) {
+    if (index > 6) {
+        index %= 7;
+    };
+
+    const weekdays = [
+        "Sunday",
+        "Monday", 
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+    ]
+
+    return weekdays[index];
+};
 
 /**
  * Convert Kelvin temperatures to Fahrenheit
@@ -767,24 +749,6 @@ function getWeatherIconURL(iconName) {
     return iconURL + iconName + urlScale;
 }
 
-
-
-
-/**
- * Send specified Ajax query with CORS issues.
- * @param {Text} queryString Full API Call, including http(s)://
- */
-function sendAjax_CORS(queryString) {
-    queryString = _CORS_SERVER + queryString;
-
-    $.ajax({
-        method: "GET",
-        url: queryString
-    }).then(function (response) {
-        // console.log(response);
-        $("#map").append($('<img src="' + response + '" type="jpg">'));
-    });
-};
 
 
 

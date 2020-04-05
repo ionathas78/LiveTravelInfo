@@ -1,22 +1,20 @@
-//  Uses the citiesData const from the cities.js file
+//  Uses the citiesData const from the cities.js file and the countriesData const from countries.js
 
-const _TEST_CITYNAME = "Austin";
-const _TEST_COUNTRYCODE = "";
-const _DEFAULT_COUNTRYCODE = "US";
-const _FUZZYMATCH_THRESHOLD = 0.65;
-const _DESTINATIONSET_MAXLENGTH = 5;
+const _TEST_CITYNAME = "Austin";                            //  For test purposes only.
+const _TEST_COUNTRYCODE = "";                               //      ibid.
+const _FUZZYMATCH_THRESHOLD = 0.65;                         //  Percentage threshold for a misspelling to make a fuzzy match
+const _DESTINATIONSET_MAXLENGTH = 5;                        //  Number of historical results to store
+const _DEFAULT_DESTINATION_COUNTRYCODE = "AF";              //  Default country on the main page. Used to prioritize exact matching.
 
-// const _CORS_SERVER = "https://polar-bayou-73801.herokuapp.com/";
-// const citiesURL = "https://github.com/SabrinaCat/LiveTravelInfo/blob/master/Assets/cities.json";
-// const citiesURL = "https://github.com/SabrinaCat/LiveTravelInfo/master/Assets/cities.json";
-
-// var _request = new XMLHttpRequest();
 var _citiesDB;
-var _queryStart = new Date();
+var _queryStart = new Date();                               //  For test purposes only
 
+//  **      Functions
 
 /**
  * Runs when the user clicks the Search button on the Index page
+ * @param {Text} cityName Name of city for which to search
+ * @param {Text} countryName Name of country in which to search for city
  */
 function searchCityAndCountry(cityName, countryName) {
     let commaPos = -1;
@@ -38,7 +36,7 @@ function searchCityAndCountry(cityName, countryName) {
         userCountry = countryName;
     }
 
-    let cityPick = returnCityInfo(userCity, userCountry, true);
+    let cityPick = returnCityInfo(userCity, userCountry, _DEFAULT_DESTINATION_COUNTRYCODE, true);
     if (!cityPick) {
         let pError = $("#error-text");
         let errorMsg = "Couldn't find city '" + userCity + ", " + userCountry + "'!";
@@ -90,11 +88,12 @@ function CityData(cityName, countryCode, cityCode, countryCurrency, cityLatitude
 
 /**
  * Returns city data from the cities DB file or _null_ if the city isn't found
- * @param {*} cityName Name of city for which to search
- * @param {*} countryCode Name of country in which the city falls. Uses "US" by default.
+ * @param {Text} cityName Name of city for which to search
+ * @param {Text} countryCode Name of country in which the city falls. Uses "US" by default.
+ * @param {Text} defaultCountryCode If provided, weights fuzzy logic by city differently.
+ * @param {Boolean} doIgnoreCountryToMatch FALSE by default. If TRUE, will omit the country code to find a city match.
  */
-function returnCityInfo(cityName, countryCode, doIgnoreCountryToMatch) {
-    // let startTime = Date.now();
+function returnCityInfo(cityName, countryCode, defaultCountryCode, doIgnoreCountryToMatch) {
     let returnObject = null;
 
     if (!countryCode) {
@@ -106,6 +105,10 @@ function returnCityInfo(cityName, countryCode, doIgnoreCountryToMatch) {
             returnObject = new CityData(city.name, city.country_code, city.code, "" ,city.coordinates.lat, city.coordinates.lon, city.time_zone);
             break;
         };
+    };
+
+    if ((!returnObject) && (defaultCountryCode == countryCode) && (countryCode != "")) {
+        returnCityInfo(cityName, "", "X", false);
     };
 
     if (!returnObject) {
@@ -128,7 +131,7 @@ function returnCityInfo(cityName, countryCode, doIgnoreCountryToMatch) {
     };
 
     if (!returnObject && doIgnoreCountryToMatch && (countryCode != "")) {
-        returnObject = returnCityInfo(cityName, "", false);           
+        returnObject = returnCityInfo(cityName, "", "X", false);           
     };
 
     if (returnObject) {
@@ -136,11 +139,13 @@ function returnCityInfo(cityName, countryCode, doIgnoreCountryToMatch) {
         returnObject.currency = countryCurrency;
     };
 
-    // let endTime = Date.now();
-    // console.log("Lookup operation took " + (endTime - startTime) + " seconds.");
     return returnObject;
 };
 
+/**
+ * Return information on the given country
+ * @param {Text} countryName Name of country for which to search
+ */
 function returnCountryInfo (countryName) {
     let returnObject = {name: "", code: "", currency: ""};
 
@@ -191,6 +196,7 @@ function returnCountryInfo (countryName) {
     return returnObject;
 };
 
+//  **      Test Functions
 
 /**
  * Test bed for DB search function.
@@ -236,14 +242,6 @@ function testCityDB() {
 
         userInput = prompt("City to search?", "Austin, US");
     };
-
-
-    // _request = new XMLHttpRequest();
-    // _request.open("GET", _CORS_SERVER + citiesURL);
-    // // _request.responseType = "json";
-    // _request.send();
-
-//     sendAjax_CORS(citiesURL);
 };
 
 /**
@@ -271,15 +269,15 @@ function testCitySearch() {
     }
 
     _queryStart = new Date();
-    renderCity(userCity, userCountry);
+    renderCityTest(userCity, userCountry);
 }
 
 /**
  * Given a city and its expected country, displays the results to the test bed page.
- * @param {*} findCity 
- * @param {*} findCountry 
+ * @param {Text} findCity Name of city for which to search
+ * @param {Text} findCountry Name of country for which to search
  */
-function renderCity (findCity, findCountry) {
+function renderCityTest (findCity, findCountry) {
     let textBox = $("#text-display");
     let existingText = textBox.text() + "\n\n";
     
@@ -302,26 +300,30 @@ function renderCity (findCity, findCountry) {
     }
     
     textBox.text(existingText + msgOutput);
-    };
+};
 
-
+//  **      Utility Functions
 
 /**
- * Compares two strings and returns the percentage of similarity
+ * Compares two strings and returns the percentage of similarity.
+ * Works best if the two strings are comparable in length; this is mainly designed to catch misspellings.
+ * Uses countString() because I couldn't find a better equivalent in vanilla JS.
  * @param {Number} txt1 First string to compare
  * @param {Number} txt2 Second string to compare
  * Original algorithm copyright 2015 by Jonathan Andrews; open for use per MIT license.
  */
 function textPercentMatch (txt1, txt2) {
+    //  Returns a number between 0 and 1 approximating the similarity between two given strings.
+    //      1 is reserved for an exact match. Any differences will max out the match at 0.995.
     let returnPercent = -1;
 
-    if (txt1 == txt2) {
+    if (txt1 == txt2) {                     
         returnPercent = 1;
 
-    } else if ((!txt1) || (!txt2)) {
+    } else if ((!txt1) || (!txt2)) {        
         returnPercent = (txt1 === txt2);
         
-    } else {
+    } else {                                
         let longString, shortString;
 
         if (txt1.length >= txt2.length) {
@@ -331,12 +333,14 @@ function textPercentMatch (txt1, txt2) {
             longString = txt2;
             shortString = txt1;
         };
-
+        
         let startPos = 0;
         let charactersMatched = 0;
         let endPosShort = shortString.length - 1;
-        let resultIncrement = 0.995 / (longString.length - countString(longString, " "));
-            
+        let resultIncrement = 995 / (longString.length - countString(longString, " ")); 
+                    //  Working in whole(ish) numbers to avoid floating point madness
+        
+        //      Work through the shorter string, comparing it to the longer
         while (startPos <= endPosShort) {
             let matchString = "";
             let matchLength = 0;
@@ -346,16 +350,20 @@ function textPercentMatch (txt1, txt2) {
                 matchLength++;
                 matchString = shortString.substr(startPos, matchLength);
             } while ((startPos + matchLength <= endPosShort) && (longString.indexOf(matchString) > -1));
+
             if (startPos + matchLength < endPosShort) {
+                //      Remove the unmatched character from the match count
                 matchLength--;
             };
-            significantLength = matchLength - countString(matchString, " ");
 
+            significantLength = matchLength - countString(matchString, " ");
             if (significantLength > 1) {
+                //      Take the matched string out of our comparison rubric so it doesn't get counted again
                 charactersMatched += significantLength;
                 matchString = matchString.substr(0, matchLength);
                 longString = longString.replace(matchString, "");
             };
+            
             if (matchLength > 1) {
                 startPos += matchLength;
             } else {
@@ -363,7 +371,7 @@ function textPercentMatch (txt1, txt2) {
             };
         };
 
-        returnPercent = charactersMatched * resultIncrement;
+        returnPercent = charactersMatched * resultIncrement / 1000;
     };
 
     return returnPercent;
@@ -386,32 +394,3 @@ function countString(baseText, searchText) {
     } while ((characterPos > -1) && (characterPos < endPos));
     return returnCount;
 };
-
-// _request.onload = function() {
-//     _citiesDB = _request.response;
-//     console.log(_request);
-//     console.log(_citiesDB);
-// };
-
-// /**
-//  * Send specified Ajax query
-//  * @param {*} queryString Full API Call, including http(s)://
-//  */
-// // function sendAjax_CORS(queryString) {
-//     queryString = _CORS_SERVER + queryString;
-
-//     $.ajax({
-//         method: "GET",
-//         url: queryString,
-//         // headers: {"X-Access-Token": _AIRLINE_TOKEN}
-//     }).then(function (response) {
-//         _citiesDB = response;
-//         console.log(response);
-//     });
-// };
-
-
-// testCityDB();
-
-// console.log(countString("Hello World!", "e"));
-// console.log(textPercentMatch("Mexico City, Mexico", "Mehico City, Mehico"));
