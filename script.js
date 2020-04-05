@@ -62,6 +62,10 @@ function populateCitySearchPage() {
     let sourceCurrency = "USD";
     let destinationCurrency = "";
 
+    let destinationLatitude = finalDestination.coords.lat;
+    let destinationLongitude = finalDestination.coords.lon;
+    let maximumDistance = 25;
+
     if (destinationCountry) {
         destinationCurrency = destinationCountry.currency;
         destinationText += ", " + destinationCountry.name;
@@ -76,6 +80,8 @@ function populateCitySearchPage() {
 
     runCurrencyExchangeQuery(sourceCurrency, destinationCurrency);
 
+
+    getNearbyWebcams(destinationLatitude, destinationLongitude, maximumDistance);
 
 	// runTicketQuery("AUS", finalDestination.code);
 	

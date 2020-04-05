@@ -61,7 +61,18 @@
     </div>
     <div class="cell small-8" style="margin-top: 4%;">
         <div class="callout">
-            <div  id="liveVideo"></div>
+            <div  id="liveVideo">
+                <label>Select Camera
+                    <select id="select-cam">
+                        <!-- Cam Feed list goes here -->
+                    </select>
+                    <button onclick="showCam()">Get Live Feed</button>
+                </label>
+                <br>
+                <iframe width="300px">
+                    <!-- Video feed goes here -->
+                </iframe>
+            </div>
 
         </div>
     </div>
@@ -117,6 +128,7 @@
     <script src="iataDBase.js" type="text/javascript"></script>
     <script src="exchange.js" type="text/javascript"></script>
     <script src="airlineTickets.js" type="text/javascript"></script>
+    <script src="webcam.js" type="text/javascript"></script>
     <script src="script.js" type="text/javascript"></script>
     <script>populateCitySearchPage()</script>
 
