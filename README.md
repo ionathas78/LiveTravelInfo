@@ -39,4 +39,10 @@ including the price, class, and depature and arrival dates, if available. This s
 of how much your tickets are going to cost. The API query for this search can take a minute to return data, so don't
 be concerned if it doesn't seem to do anything immediately after you press the button--it's working on your request!
 
+## Screenshots
+![Main Page](Index_Screenshot.jpg)
+![Results Page, Top](CitySearch_Screenshot_1.jpg)
+![Results Page, Bottom](CitySearch_Screenshot_2.jpg)
+![Flights Page](Flights_Screenshot.jpg)
+
 
