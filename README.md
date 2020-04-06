@@ -29,3 +29,11 @@ THEN the page will remember my destination
 The main page is a simple search pane where you enter the city and country to which you're headed. We included a
 comprehensive database of cities and countries and limited fuzzy matching capabilities, so it's okay if you don't know
 exactly how your destination is spelled. Just type it in and click the 'Search' button.
+On the search results page, you'll find the exchange rate against the dollar and a dropdown list of the available
+webcams in the area. Select the webcam you'd like to see and click the 'Get Live Feed' button to bring the view up
+in the iFrame below. At the bottom of the page is the weather info panel, where you can click the button to get the
+current weather, a five-day forecast, or the current UV index. Click the 'Find a Flight' button at the bottom of the
+page to see the ticket info page.
+This page will search through recent ticket sales from the origin city to the arrival city and list what it finds,
+including the price, class, and depature and arrival dates, if available. This should be enough to give you an idea
+of how much your tickets are going to cost.
