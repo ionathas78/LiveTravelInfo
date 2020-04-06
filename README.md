@@ -36,4 +36,7 @@ current weather, a five-day forecast, or the current UV index. Click the 'Find a
 page to see the ticket info page.
 This page will search through recent ticket sales from the origin city to the arrival city and list what it finds,
 including the price, class, and depature and arrival dates, if available. This should be enough to give you an idea
-of how much your tickets are going to cost.
+of how much your tickets are going to cost. The API query for this search can take a minute to return data, so don't
+be concerned if it doesn't seem to do anything immediately after you press the button--it's working on your request!
+
+
