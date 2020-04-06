@@ -62,14 +62,17 @@ function populateCitySearchPage() {
     let maximumCountryLength = 12;
 
     let sourceCurrency = "USD";
+    let sourceCurrencyName = "Dollar"
     let destinationCurrency = "";
+    let destinationCurrencyName = "";
 
     let destinationLatitude = finalDestination.coords.lat;
     let destinationLongitude = finalDestination.coords.lon;
     let maximumDistance = 25;
 
     if (destinationCountry) {
-        destinationCurrency = destinationCountry.currency;
+        destinationCurrency = destinationCountry.currencyCode;
+        destinationCurrencyName = destinationCountry.currencyName;
         if (destinationCountry.name.length <= maximumCountryLength) {
             destinationText += ", " + destinationCountry.name;
         } else {
@@ -79,6 +82,8 @@ function populateCitySearchPage() {
 
     console.log(finalDestination);
     $("#city-name").text(destinationText);
+    $("#from-currency").val(sourceCurrencyName);
+    $("#to-currency").val(destinationCurrencyName);
 
     runCurrencyExchangeQuery(sourceCurrency, destinationCurrency);
 
