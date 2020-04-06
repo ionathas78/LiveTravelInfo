@@ -183,7 +183,11 @@ function renderResult (queryType) {
                 //             "background-position: top; background-repeat: no-repeat;" +
                 //             "background-size: " + imageSize + ";";
         
-                msgLine = dayName + ": " + weatherDescription + "; Temp. " + weatherTemperature + "\xB0F; " +
+                msgLine = "";
+                if (dayName !== undefined) {
+                    msgLine = dayname + ": ";
+                }
+                msgLine += weatherDescription + "; Temp. " + weatherTemperature + "\xB0F; " +
                             "Rel. Humidity: " + weatherHumidity + "%.\n";
                 
                 msgOutput += msgLine;
