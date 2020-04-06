@@ -168,6 +168,9 @@ function renderResult (queryType) {
             
             for (var i = 4; i < _weatherForecast.list.length; i += 8) {
                 dayName = dayOfWeek(new Date(_weatherForecast.list[i].dt_txt).getDay());
+                if (dayName === undefined) {
+                    dayName = dayOfWeek(new Date().getDay() + (i - 4) / 8 + 1);
+                }
                 weatherDescription = _weatherForecast.list[i].weather[0].description;
                 weatherTemperature = kelvinToFahrenheit(_weatherForecast.list[i].main.temp).toFixed(1);
                 weatherHumidity = _weatherForecast.list[i].main.humidity;

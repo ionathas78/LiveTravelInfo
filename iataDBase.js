@@ -136,7 +136,7 @@ function returnCityInfo(cityName, countryCode, defaultCountryCode, doIgnoreCount
 
     if (returnObject) {
         let countryCurrency = returnCountryInfo(returnObject.countryCode);
-        returnObject.currency = countryCurrency;
+        returnObject.currencyCode = countryCurrency;
     };
 
     return returnObject;
@@ -147,13 +147,14 @@ function returnCityInfo(cityName, countryCode, defaultCountryCode, doIgnoreCount
  * @param {Text} countryName Name of country for which to search
  */
 function returnCountryInfo (countryName) {
-    let returnObject = {name: "", code: "", currency: ""};
+    let returnObject = {name: "", code: "", currency: "", currencyName: ""};
 
     for (var country of countriesData) {
         if (country.name == countryName) {
             returnObject.name = country.name;
             returnObject.code = country.code;
-            returnObject.currency = country.currencyCode;
+            returnObject.currencyCode = country.currencyCode;
+            returnObject.currencyName = country.currency;
             break;
         };
     };
@@ -163,7 +164,8 @@ function returnCountryInfo (countryName) {
             if (country.code == countryName) {
                 returnObject.name = country.name;
                 returnObject.code = country.code;
-                returnObject.currency = country.currencyCode;
+                returnObject.currencyCode = country.currencyCode;
+                returnObject.currencyName = country.currency;
                 break;
             };
         };
@@ -172,7 +174,8 @@ function returnCountryInfo (countryName) {
     if (returnObject.code == "") {
         let matchName = "";
         let matchCode = "";
-        let matchCurrency = "";
+        let matchCurrencyCode = "";
+        let matchCurrencyName = "";
         let matchPercent = 0;
 
         for (var country of countriesData) {
@@ -182,14 +185,16 @@ function returnCountryInfo (countryName) {
 
                 matchName = country.name;
                 matchCode = country.code;
-                matchCurrency = country.currencyCode;
+                matchCurrencyCode = country.currencyCode;
+                matchCurrencyName = country.currency;
             };
         };
 
         if (matchPercent >= _FUZZYMATCH_THRESHOLD) {
             returnObject.name = matchName;
             returnObject.code = matchCode;
-            returnObject.currency = matchCurrency;
+            returnObject.currencyCode = matchCurrencyCode;
+            returnObject.currencyName = matchCurrencyName;
         }
     };
 
