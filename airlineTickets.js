@@ -1,7 +1,7 @@
 //  **  Declarations
 
 const _CORS_SERVER = "https://polar-bayou-73801.herokuapp.com/";
-const _AIRLINE_APIBASE = "http://api.travelpayouts.com/v2";
+const _AIRLINE_APIBASE = "https://api.travelpayouts.com/v2";
 const _AIRLINE_APILATEST = "/prices/latest";                //  Needs '?' after
 const _AIRLINE_CURRENCY = "currency=%CURRENCY%";            //  Where %CURRENCY% is the currency code
 const _AIRLINE_ORIGIN = "origin=%CITY%";                    //  Where %CITY% is the city code
